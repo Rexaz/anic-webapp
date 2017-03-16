@@ -2,6 +2,14 @@
   "name" : "anic-webapp",
   "version" : "1.0.0",
   "dependencies" : {
-    "express" : "~4.13.0"
+    "express" : "~4.13.0",
+    "morgan" : "~1.6.0",
+    "compression" : "~1.5.0",
+    "body-parser" : "~1.13.0",
+    "jade" : "~1.11.0",
+    "ejs" : "~2.5.6",
+    "express-validator" : "~2.14.0",
+    "express-session" : "~1.11.0",
+    "mongoose" : "~4.4"
   }
 }

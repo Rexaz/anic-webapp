@@ -1,0 +1,7 @@
+.map_usa{
+  border:1px dotted blue;
+  width: 800px;
+  height: 375px;
+  float:right;
+  position: relative
+}

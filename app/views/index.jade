@@ -1,0 +1,53 @@
+doctype html
+html(lang="en")
+  head
+    title #{title}
+
+    //css
+    link(href='/css/bootstrap.css', rel='stylesheet')
+    link(href='/css/style.css', rel='stylesheet')
+
+  //body
+  body(ng-app="Anic")
+    //navbar
+    div
+      nav(class="navbar navbar-default")
+        div(class="container-fluid")
+          div(class="navbar-header")
+            //a(class="navbar-brand")
+            Anic Brand
+          ul(class="nav navbar-nav)
+            li(class="active")
+              a(href="#")
+                Home
+            li
+                a(href="#")
+                  Rexaz
+
+
+
+
+
+    h1(#{message})
+
+    ul
+      - for (var i = 1; i <= 3; i++)
+        li Item #{i}
+
+    div(ng-controller="MainController")
+      {{2+4}}
+      //{{data_usa}}
+
+
+    div(id="container1",class="map_usa")
+
+
+    //js
+    script(src="http://d3js.org/d3.v3.min.js")
+    script(src="http://d3js.org/topojson.v1.min.js")
+    script(src="http://datamaps.github.io/scripts/datamaps.usa.min.js?v=1")
+    script(type='text/javascript', src="/js/bootstrap.min.js")
+    script(type='text/javascript', src="/js/jquery-3.1.1.min.js")
+    script(type='text/javascript', src='/js/angular/angular.min.js')
+    script(type='text/javascript', src='/js/anicApp.js')
+    script(type='text/javascript', src='/js/anic.js')
