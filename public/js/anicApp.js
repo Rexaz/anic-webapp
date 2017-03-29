@@ -4,79 +4,47 @@
     var anicApp = angular.module('Anic',[]); // angular จะจัดการใน  เพิ่ม <html ng-app="Anic">  // modul เพิ่มเติม[]
 
     //Main controller **************************************************************************************************************
-    anicApp.controller('MainController', function ($scope, $http) {//dependency injection --> $scope $http เข้าไป
+    anicApp.controller('MainController', function ($scope, $http, $q) {//dependency injection --> $scope $http เข้าไป //$q สำหรับจัดการ Promise HTTP Request ตาม q ไม่ง้ั้น ข้อมูลจะ null
+
+      httpGet_usaVote()//get Obj from mongodb
+        .then(function(raw_data) {//แกะ object Object.$$state.value //ได้รับ return จาก httpGet_usaVote
+
+            var data_usaVote = Data_UsaVote(raw_data);//get data to map usa
+            Datamap_Usa(data_usaVote);//แสดง กราฟ usa จากไฟล์ anic.js
+
+            var data_doughnut = Data_Doughnut(raw_data);//get data to Doughnut
+            Chart_Doughnut(data_doughnut);//เรียกให้แสดงผล กราฟโดนัด โดยส่ง data ไปแสดง
+
+            var data_Bar = Data_Bar(raw_data);
+            Chart_Bar(data_Bar);
+
+            var data_PosNegArea = Data_PosNegArea(raw_data);
+            Chart_PosNegArea(data_PosNegArea);
+
+            var data_WordCloud = Data_WordCloud(raw_data);
+            Chart_WordCloud(data_WordCloud);
+
+
+      });///end httpGet_usaVote for Asyco //นอกจากนี้ จะแสดงก่อน ตรงนี้
       $scope.anic = "Hello AngularJS"; //$scope เป็นตัวเชื่อระหว่าง Contorller กับ View ให้เห็นกัน
-
-
-      httpGet_usaVote();//get Obj from mongodb
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 /////////////////////////////// function in anugular
-      function httpGet_usaVote(){
-        var usa = {};
-        $http({
-             method: 'GET',
-             url: '/usavote_get'
-          }).then(function (success){
-            var datas = success.data
-            //for(var a in $scope.data_usa){
-            var sum = 0;
-            Object.keys(datas[0].location).forEach(function(key) {
-              if(key!="" && key !="usa"){
-                sum +=  datas[0].location[key].pos + datas[0].location[key].neg;
-              }
-            });
+    function httpGet_usaVote(){
+      var deferred = $q.defer();//เริ่มทำงาน มีก่ารทำ q ให้ รอตรงนี้ให้เส็จก่อนค่อยไป
+      $http({
+           method: 'GET',
+           url: '/usavote_get'
+        }).then(function (success){
+          deferred.resolve(success.data);// เสร็จแล้วเอาไปเลย!!
+        },function (error){
+      });
+      return deferred.promise; //รอตามสัญญา ขอเวลาอีกไม่นาน
+    }
 
-
-            Object.keys(datas[0].location).forEach(function(key) {//loop get key
-              var detail ={};
-              var vote =  datas[0].location[key].pos + datas[0].location[key].neg;//รวม vote ทั้งหมด จาก pos neg
-
-              var rat = Number((vote/sum)*50).toFixed(2);//2 digit
-
-              //console.log(key+" "+rat);
-
-              if(rat<=0.20){
-                detail['fillKey'] = "color0";
-              }
-              else if (rat >= 0.21 && rat <= 0.40) {
-                detail['fillKey'] = "color1";
-              }
-              else if (rat >= 0.41 && rat <= 0.60) {
-                detail['fillKey'] = "color2";
-              }
-              else if (rat >= 0.61 && rat <= 0.80) {
-                detail['fillKey'] = "color3";
-              }
-              else if (rat >= 0.81) {
-                detail['fillKey'] = "color4";
-              }
-
-              detail['electoralVotes'] = vote;
-              usa[key] = detail;//เอา state แต่ละอันไปใส่ json อันใหม่เพื่อเรืยง
-              //console.log(key+" "+detail['fillKey']);
-
-              });
-
-              Datamap_Usa(usa);//แสดง กราฟ usa จากไฟล์ anic.js
-
-          },function (error){
-
-        });
-      }
 });
 ///////////////////////////////////////// end angular
+
 })();

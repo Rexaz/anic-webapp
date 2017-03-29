@@ -16,7 +16,7 @@
       <nav class="navbar navbar-default">
         <div class="container-fluid">
           <div class="navbar-header">
-            <a class="navbar-brand" href="#">Anic</a>
+            <a class="navbar-brand" href="#"><img src="/img/ku.png" alt="" class="logo_ku"></a>
           </div>
           <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
@@ -24,6 +24,10 @@
             <li><a href="#">Page 2</a></li>
             <li><a href="#">Page 3</a></li>
           </ul>
+          <ul class="nav navbar-nav navbar-right">
+           <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+           <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+         </ul>
         </div>
       </nav>
     </div>
@@ -31,10 +35,23 @@
 
     <!-- midle -->
     <div class="" ng-controller="MainController">
-      {{1+7}}
-      <div id="container1" class="map_usa">
 
+
+      <div class="top_graph"><!-- เป็นส่วนบนที่แสดงโดยรวม -->
+        <div id="container1" class="map_usa"></div>
+        <canvas id="bar" class=""></canvas>
       </div>
+
+      <div class=""><!-- เป็นส่วนที่ replac by keyword -->
+        <canvas id="all_area" class="graph_area" ></canvas>
+        <canvas id="chart-area" class="map_usa"></canvas>
+      </div>
+
+
+
+
+
+
 
     </div>
     <!-- end midle -->
@@ -49,7 +66,10 @@
   <script src="http://datamaps.github.io/scripts/datamaps.usa.min.js?v=1"></script>
   <script src="/js/jquery-3.1.1.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/Chart.bundle.js"></script>
   <script src="/js/angular/angular.min.js"></script>
+  <script src="/js/d3.layout.cloud.js"></script><!-- ไฟล์ layout ของ wordcloud -->
   <script src="/js/anicApp.js"></script>
-  <script src="/js/anic.js"></script>
+  <script src="/js/ExtractData.js"></script><!-- ไฟล์ แปลงข้อมูล จากข้อมูล ดิบไปเป็นข้อมูลที่กราฟนำไปแสดงได้ -->
+  <script src="/js/Showdata.js"></script><!-- ไฟล์ แสดงเป็นกราฟต่างๆ  -->
 </html>

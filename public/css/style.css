@@ -5,3 +5,14 @@
   float:right;
   position: relative
 }
+
+.navbar-brand {
+  height: 70px;
+}
+.logo_ku{
+  width: 40%;
+}
+.graph_area{
+  width: 20%;
+   display: inline !important;
+}
