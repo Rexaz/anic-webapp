@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+
+
+  </head>
+  <body ng-app="mainAnicApp">
+    <div class="body_all">
+        <!--Nav bar-->
+        <div class="Navbar_top">
+          <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <a class="navbar-brand" href="#"><img src="/img/ku.png" alt="" class="logo_ku"></a>
+              </div>
+              <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#">Page 1</a></li>
+                <li><a href="#">Page 2</a></li>
+                <li><a href="#">Page 3</a></li>
+                <li><a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a></li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+               <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+               <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+             </ul>
+            </div>
+          </nav>
+        </div>
+        <!-- end nav bar -->
+
+        <!-- ################################ navbar-slide + Main_middel ####################################### -->
+        <!-- navbar-slide -->
+        <div id="wrapper" class="toggled">
+
+          <!-- Sidebar -->
+          <div id="Sidebar_wrapper">
+              <ul class="sidebar-nav">
+                  <li class="sidebar-brand">
+                      <a href="#">
+                          Start Bootstrap
+                      </a>
+                  </li>
+                  <li>
+                      <a href="#">Dashboard</a>
+                  </li>
+                  <li>
+                      <a href="#">Shortcuts</a>
+                  </li>
+                  <li>
+                      <a href="#">Overview</a>
+                  </li>
+                  <li>
+                      <a href="#">Events</a>
+                  </li>
+                  <li>
+                      <a href="#">About</a>
+                  </li>
+                  <li>
+                      <a href="#">Services</a>
+                  </li>
+                  <li>
+                      <a href="#">Contact</a>
+                  </li>
+              </ul>
+          </div>
+          <!-- endnavbar-slide -->
+          <!-- Main_middel -->
+          <div id="Main_middel" class="Main_middel" ng-controller="SteamingController">
+
+            <div class="top_for_nav"></div>
+
+
+            <div class="top_graph"><!-- เป็นส่วนบนที่แสดงโดยรวม -->
+                <div class="row card-2">
+                    <div class="col-md-4">
+                      <div class="Chart_Doughnut"><!-- Dounghnut -->
+                        <canvas id="Chart_Doughnut"></canvas>
+                      </div>
+                    </div>
+                    <div class="col-md-8" style="float:right;"><!-- freq Map Usa  -->
+                      <div class="col-md-10">
+                        <div id='Datamap_Usa' class='Datamap_Usa'></div>
+                      </div>
+                      <div class="col-md-2 graph_scale_div">
+                        <img class="graph_scale" src="img/scale_min_max.png" alt="">
+                      </div>
+                    </div>
+                </div>
+
+                <div class="row card-2">
+                  <div class="col-md-12">
+                    <div class="Chart_Bar"><!-- Bar all pos -->
+                      <canvas id="Chart_Bar"></canvas>
+                    </div>
+                  </div>
+
+                </div>
+
+
+          </div>
+          <!-- end  top_graph -->
+
+
+          <!-- Main_graph -->
+          <!-- Main_graph -->
+          <div class="main_graph">
+
+
+            <!-- replace_graphh --><!-- กราฟในแต่ละ keyword  -->
+            <div id="replace_graph" class="replace_graph">
+
+              <!-- graph ของแต่ละก้อน keyword  -->
+              <div class="card-2" ng-repeat="data in raw_datas">
+                <div class="node{{$index}}" >
+                  <button type='button' name='button' ng-click="hide_show('keyword_{{$index}}')" class='lable_close'>กด</button>
+                  <div class="keyword_{{$index}} hide_show row">
+
+                    <h1>{{data.keyword}}</h1>
+
+                    <div class="col-md-12">
+                      <h3 class="grapg_title">Aear</h3>
+                      <canvas id="Chart{{$index}}_PosNegArea" ng-init="creat_graph(data,$index)"></canvas><!-- กราฟเส้นเทียบ pos neg  -->
+                    </div>
+
+
+                    <div class="col-md-12">
+                      <h3 class="grapg_title">Map</h3>
+
+                      <div class="col-md-10"><!-- กราฟ map เที่ยว pos neg -->
+                        <div id="Datamap{{$index}}_PosNeg" class="Datamap_PosNeg"></div>
+                      </div>
+                      <div class="col-md-2 graph_scale_div">
+                        <img class="graph_scale" src="img/scale_pos_neg.png" alt="">
+                      </div>
+                    </div>
+
+                    <div class="col-md-12">
+                      <div class="col-md-12"><!-- world cloud   -->
+                        <h3 class="grapg_title">World cloud</h3>
+                        <div id="Chart{{$index}}_WordCloud" class="Word_Cloud"></div>
+                      </div>
+                    </div>
+
+
+
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+            <!-- end replace_graphh -->
+
+
+
+
+          </div>
+          <!-- end Main_graph -->
+          <!-- end Main_graph -->
+
+
+
+            <!--div class="replace_graph card-2">
+                <div class="graph_PosNegarea">
+                  <canvas id="graph_PosNegarea"></canvas>
+                </div>
+                <div class="graph_wordcloud">
+                </div>
+            </div-->
+            <!-- end replace_graph -->
+
+          </div>
+          <!--end Main_middel -->
+
+
+
+
+
+        </div>
+        <!-- end midle -->
+        <!-- ################################ end navbar-slide + Main_middel ####################################### -->
+
+
+
+
+    </div>
+    <!-- end body_all -->
+
+
+  </body>
+  <!-- Js -->
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://d3js.org/topojson.v1.min.js"></script>
+  <script src="http://datamaps.github.io/scripts/datamaps.usa.min.js?v=1"></script>
+  <script src="/js/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/Chart.bundle.js"></script>
+  <script src="/js/angular/angular.min.js"></script>
+  <script src="/js/moment-with-locales.js" charset="utf-8"></script><!-- เอาไว้เรียงวันที่ -->
+  <script src="/js/d3.layout.cloud.js"></script><!-- ไฟล์ layout ของ wordcloud -->
+  <script src="/Appication2.js"></script><!-- main anugular  -->
+  <script src="/js/ExtractData.js"></script><!-- ไฟล์ แปลงข้อมูล จากข้อมูล ดิบไปเป็นข้อมูลที่กราฟนำไปแสดงได้ -->
+  <script src="/js/Showdata.js"></script><!-- ไฟล์ แสดงเป็นกราฟต่างๆ  -->
+
+          <script>
+           $("#menu-toggle").click(function(e) {
+               e.preventDefault();
+               $("#wrapper").toggleClass("toggled");
+           });
+           </script>
+</html>

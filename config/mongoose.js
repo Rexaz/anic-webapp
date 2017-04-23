@@ -14,8 +14,9 @@ module.exports = function(){
   //mongoose.set('debug',config.debug);//set ใช้ show log เมื่อมีปัญหาตอน Insert update delect
   var db = mongoose.createConnection(uri);
 
-  require('../app/models/anic.model.js')//ทำให้รู้จัก model
-  require('../app/models/usa.model.js')//ทำให้รู้จัก model
+  require('../app/models/anic.server.model.js')//ทำให้รู้จัก model
+  require('../app/models/usa.server.model.js')//ทำให้รู้จัก model
+  require('../app/models/anic_steaming.server.model.js')//ทำให้รู้จัก model
 
   return db;
 };

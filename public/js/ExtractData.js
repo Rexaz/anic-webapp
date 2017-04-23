@@ -7,49 +7,152 @@ var color =[
   'rgb(153, 102, 255)',//purple
   'rgb(231,233,237)'//grey
 ];
+
+var region = ['AK','WA','OR','CA','NV','HI','UT','AZ','ID','MT','WY','CO','NM',//West
+  'ND','SD','NE','KS','MN','IA','MO','WI','IL','IN','MI','OH',//MiD-west
+  'TK','OK','AR','LA','MS','AL','TN','KY','WV','VA','NC','SC','GA','FL','DE','MD',//South
+  'PA','NY','NJ','CT','VT','NH','ME','MA','RI']//North-east
+
 ////////////////////////////
 ////////////////////////////Data_UsaVote
-function Data_UsaVote(datas) {//หารูปแบบ data ให้ Datamap_Usa
-  var Alldata ={};//data ข้อมูลแต่ละระรัฐพร้อม ส่งให้ Datamap_Usa เพื่อแสดง map
-  //for(var a in $scope.data_usa){
+function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap_Usa
+  var Alldata = {};//data ข้อมูลแต่ละระรัฐพร้อม ส่งให้ Datamap_Usa เพื่อแสดง map
+  var datas = _datas;
+
+  //var location = datas[0].location;
+  var location; //= datas[0].location;
+  for(var l in datas){//ทำให้ data location ที่ไม่มีใน mongo มีค่าเริ่มต้น
+    location = datas[l].location;
+    for(var r in region){
+      try{//ค่าที่มามาตั้งแต่ mongo
+        location[region[r]]['total'] = 0;
+      }
+      catch(err){//ใส่ให้เองตาม key เพิ่มใหม่เพราะ ไม่มี key นี้ใน Mongo
+        location[region[r]] = {'total' : 0};
+        location[region[r]] = {'pos' : 0,'neg' : 0};
+      }
+    }
+  }
+
+  /*for(var r in region){
+    try{//ค่าที่มามาตั้งแต่ mongo
+      location[region[r]]['total'] = 0;
+    }
+    catch(err){//ใส่ให้เองตาม key เพิ่มใหม่เพราะ ไม่มี key นี้ใน Mongo
+      location[region[r]] = {'total' : 0};
+      location[region[r]] = {'pos' : 0,'neg' : 0};
+    }
+  }*/
+
+  var data = {};
+  var fillColor ={};
+
   var sum = 0;
-  Object.keys(datas[0].location).forEach(function(key) {
-    if(key!="" && key !="usa"){
-      sum +=  datas[0].location[key].pos + datas[0].location[key].neg;
+  var arr_vote = [];
+
+  Object.keys(location).forEach(function(key) {
+    if(key!="" && key !="USA" && key != null && key != 'null'){
+      var total = 0;
+
+      for(var i in datas){//แต่ละ keyword
+        var pos =0;
+        try{pos = datas[i].location[key].pos;}
+        catch(err){pos =0;}
+
+        var neg =0;
+        try{neg = datas[i].location[key].neg;}
+        catch(err){neg =0;}
+
+        /*if(pos == null){pos=0;}
+        if(neg == null){neg =0;}*/
+
+        total +=pos+neg;//รวม pos neg ของทุก keyword
+      }
+      location[key]['total'] = total;//ฝาก total ไว้ที่ ช่อง 0 เป็นค่าที่ รวม การ vote จากทุก key ของแต่ละรัฐ
+
+      arr_vote.push(total);//เอา total ไป รวมกัน
     }
   });
+  var max_vote = Math.max.apply(null, arr_vote);//เอา vote อันที่มากสุดตั้งใน การหาสี เข้มสุด
 
-
-  Object.keys(datas[0].location).forEach(function(key) {//loop get key
+  Object.keys(location).forEach(function(key) {//loop get key
     var detail ={};
-    var vote =  datas[0].location[key].pos + datas[0].location[key].neg;//รวม vote ทั้งหมด จาก pos neg
+    var vote =  location[key].total;//รวม vote ทั้งหมด จาก pos neg
 
-    var rat = Number((vote/sum)*50).toFixed(2);//2 digit
+    var scal_g = 255-(Math.abs(120-(Math.ceil((vote/max_vote)*135)+120)));//เริ่มที่เข้มสุดที่ 120 อ่อนสุด 255
+    var scal_rb = 255-(Math.ceil((vote/max_vote)*255));//เริ่มเข้มสุด 0 อ่อนสุด 255
+    var scel_color = 'rgb('+scal_rb+' ,'+scal_g+','+scal_rb+')'; //หา scel ระดับสีของแต่ระรัฐ
+    fillColor[scel_color] = scel_color;
 
-    //console.log(key+" "+rat);
-
-    if(rat<=0.20){
-      detail['fillKey'] = "color0";
-    }
-    else if (rat >= 0.21 && rat <= 0.40) {
-      detail['fillKey'] = "color1";
-    }
-    else if (rat >= 0.41 && rat <= 0.60) {
-      detail['fillKey'] = "color2";
-    }
-    else if (rat >= 0.61 && rat <= 0.80) {
-      detail['fillKey'] = "color3";
-    }
-    else if (rat >= 0.81) {
-      detail['fillKey'] = "color4";
-    }
-
-    detail['electoralVotes'] = vote;
-    Alldata[key] = detail;//เอา state แต่ละอันไปใส่ json อันใหม่เพื่อเรืยง
+    detail['fillKey'] = scel_color;//สีของพื้นที่นั้น
+    detail['electoralVotes'] = vote;//จำนวนการ vote
+    data[key] = detail;//เอา state แต่ละอันไปใส่ json อันใหม่เพื่อเรืยง
     //console.log(key+" "+detail['fillKey']);
     });
+    Alldata['data'] = data;
+    Alldata['fillColor'] = fillColor;
     return Alldata;//คืนค้าพร้อม ที่แสดง แผนที่
 }
+
+
+//////////////////////////
+/////////////////////////Data_PosNegMap
+function Data_PosNegMap(datas){
+  var Alldata ={};//data ข้อมูลแต่ละระรัฐพร้อม ส่งให้ Datamap_Usa เพื่อแสดง map
+  console.log(datas);
+  var location = datas.location;
+
+  /*for(var r in region){//เพื่อให้ รัฐ ที่ไม่มีใน mongo มีค่าเป็น 0
+    try{//ค่าที่มามาตั้งแต่ mongo
+      location[region[r]]['total'] = 0;
+    }
+    catch(err){//ใส่ให้เองตาม key เพิ่มใหม่เพราะ ไม่มี key นี้ใน Mongo
+      location[region[r]] = {'total' : 0};
+      location[region[r]] = {'pos' : 0,'neg' : 0};
+    }
+  }*/
+
+  var data = {};
+  var fillColor ={};
+
+  var arr_vote = [];
+  var max_vote =0;
+  Object.keys(location).forEach(function(key) {
+    if(key!="" && key !="USA" && key != null && key != 'null'){
+      //arr_vote.push(location[key].pos + location[key].neg);
+      var sum_vote = location[key].pos + location[key].neg;
+      if(max_vote<sum_vote){
+        max_vote = sum_vote;
+      }
+    }
+  });
+  //var max_vote = Math.max.apply(null, arr_vote);//เอา vote อันที่มากสุดตั้งใน การหาสี เข้มสุด
+  Object.keys(location).forEach(function(key) {//loop get key
+    var detail ={};
+    //console.log(location[key].pos +" "+ location[key].neg);
+    var pos_neg =  location[key].pos + location[key].neg;//รวม vote ทั้งหมด จาก pos neg
+    var alpha  = 1;//((pos_neg/max_vote).toFixed(3)); //ความโปล่งใส .3 แหน่ง
+
+    var pos = location[key].pos;//ค่า บวก
+    var neg = location[key].neg;
+
+    var scal_b = Math.ceil((pos/pos_neg)*255);//rate_pos
+    if(pos == 0 && neg == 0){scal_b = 0;}// 0/0 หาค่าไม่ได้
+    var scal_r = 255-scal_b;//rate_neg
+    var scel_color = 'rgba('+scal_r+', 0, '+scal_b+', '+alpha+')'; //หา scel ระดับสีของแต่ระรัฐ
+    fillColor[scel_color] = scel_color;
+    //console.log(scel_color);
+
+    detail['fillKey'] = scel_color;//สีของพื้นที่นั้น
+    detail['electoralVotes'] = "pos: "+location[key].pos +", neg: "+location[key].neg;//ค่าที่แสดงตอนชี้
+    data[key] = detail;//เอา state แต่ละอันไปใส่ json อันใหม่เพื่อเรืยง
+    //console.log(key+" "+detail['fillKey']);
+    });
+    Alldata['data'] = data;
+    Alldata['fillColor'] = fillColor;
+    return Alldata;//คืนค้าพร้อม ที่แสดง แผนที่
+}
+
 
 /////////////////////////////////////
 ////////////////////////////////////Data_Doughnut
@@ -91,7 +194,7 @@ function Data_Doughnut(datas){
 
 //////////////////////////
 /////////////////////////Data_PosNegArea
-function Data_PosNegArea(datas){
+function Data_PosNegArea(datas,type){
   //   d.datetime.sort(function(a,b){
   //   // Turn your strings into dates, and then subtract them
   //   // to get a value that is either negative, positive, or zero.
@@ -114,51 +217,122 @@ function Data_PosNegArea(datas){
             ]
     }
     */
-  var Alldata = [];
+    var Alldata = [];
 
-  for(var i in datas){
-
-    var d = datas[i].datetime;//ฟิก ไว้เอามาเเค่อันเดียว
-    var date = {};
-    Object.keys(d).sort().forEach(function(key) {
-      date[key]= d[key];
-      });
-
-
+    var d = datas.datetime;//ฟิก ไว้เอามาเเค่อันเดียว
+    var datetime = {};
     var data ={};
           var labels = [];
           //var dataset = [];
                 //var label = d.keyword;
                 var data_pos = [];
                 var data_neg = [];
-    //Object.keys(d.datetime).forEach(function(key) {//loop get key
-    Object.keys(date).forEach(function(key) {//loop get key
-        labels.push(key);//fide labal datetime
-        data_pos.push(date[key].pos);//ใส่ข้อมูลให้ data ที่เป็น pos
-        data_neg.push(date[key].neg);
-    });
 
-                var dataset_pos = {};
-                    dataset_pos['label'] = 'positive';
-                    dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
-                    dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
-                    dataset_pos['data'] = data_pos;
+    ////////////////////////// days
+    if(type === 'days'){//แสดง graph area เป็น แบบ วัน
 
-                var dataset_neg = {};
-                    dataset_neg['label'] = 'negative';
-                    dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
-                    dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
-                    dataset_neg['data'] = data_neg;
+      Object.keys(d).sort(function(a, b) {//เรียงวันที่ by key
+          return moment(a, 'DD/MM/YYYY').toDate() - moment(b, 'DD/MM/YYYY').toDate();
+        }).forEach(function(key) {
+          datetime[key]= d[key];
+      });
 
-                var dataset = [];
-                dataset.push(dataset_pos);
-                dataset.push(dataset_neg);
-          data['labels'] = labels;
-          data['datasets'] = dataset;
-    Alldata.push(data);
-  }
 
-  return Alldata[1];
+      //Object.keys(d.datetime).forEach(function(key) {//loop get key
+      /*Object.keys(datetime).forEach(function(key_date) {//loop get date key
+          labels.push(key_date);//fide labal datetime
+
+          var date_pos = 0;// ผลรวม pos ของแต่ละ date
+          var date_neg = 0;
+          var time = datetime[key_date]; //time of day
+          Object.keys(time).forEach(function(key_time) {//loop get time key
+            date_pos+=datetime[key_date][key_time].pos;
+            date_neg+=datetime[key_date][key_time].neg;
+          });
+          data_pos.push(date_pos);//ใส่ข้อมูลให้ data ที่เป็น pos
+          data_neg.push(date_neg);
+
+      });*/
+//////////////////////
+            //Object.keys(d.datetime).forEach(function(key) {//loop get key
+          Object.keys(datetime).forEach(function(key) {//loop get key
+              labels.push(key);//fide labal datetime
+              data_pos.push(datetime[key].pos);//ใส่ข้อมูลให้ data ที่เป็น pos
+              data_neg.push(datetime[key].neg);
+          });
+///////////////////
+                  var dataset_pos = {};
+                      dataset_pos['label'] = 'positive';
+                      dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
+                      dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
+                      dataset_pos['data'] = data_pos;
+
+                  var dataset_neg = {};
+                      dataset_neg['label'] = 'negative';
+                      dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
+                      dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
+                      dataset_neg['data'] = data_neg;
+
+                  var dataset = [];
+                  dataset.push(dataset_pos);
+                  dataset.push(dataset_neg);
+            data['labels'] = labels;
+            data['datasets'] = dataset;
+
+    }
+    ///////////////////////////////// mins
+    else if (type === 'mins') {
+
+        Object.keys(d).sort(function(a, b) {//เรียงวันที่ by key
+            return moment(a, 'DD/MM/YYYY').toDate() - moment(b, 'DD/MM/YYYY').toDate();
+          }).forEach(function(key) {
+            datetime[key] = d[key];
+        });
+
+        //Object.keys(d.datetime).forEach(function(key) {//loop get key
+        Object.keys(datetime).forEach(function(key_date) {//loop get date key
+
+            var time = {}; //time of day
+            Object.keys(datetime[key_date]).sort(function(a, b) {//เรียง time่ by key
+                return moment(a, 'HH:mm').toDate() - moment(b, 'HH:mm').toDate();
+              }).forEach(function(key) {
+                time[key]= datetime[key_date][key];
+            });
+
+            Object.keys(time).forEach(function(key_time) {//loop get time key
+              var time_pos = datetime[key_date][key_time].pos;// ผลรวม pos ของแต่ละ date
+              var time_neg = datetime[key_date][key_time].neg;
+              labels.push(key_date+" "+key_time);//fide labal datetime
+              data_pos.push(time_pos);//ใส่ข้อมูลให้ data ที่เป็น pos
+              data_neg.push(time_neg);
+            });
+        });
+
+                    var dataset_pos = {};
+                        dataset_pos['label'] = 'positive';
+                        dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
+                        dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
+                        dataset_pos['data'] = data_pos;
+
+                    var dataset_neg = {};
+                        dataset_neg['label'] = 'negative';
+                        dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
+                        dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
+                        dataset_neg['data'] = data_neg;
+
+                    var dataset = [];
+                    dataset.push(dataset_pos);
+                    dataset.push(dataset_neg);
+              data['labels'] = labels;
+              data['datasets'] = dataset;
+    }
+
+
+
+    //Alldata.push(data);
+    //data เป็นข้อมูลของเเต่ละชุด
+    //Alldata เอาข้อมูลเเต่ละชุดมามัดรวม
+  return data;
 }
 
 
@@ -176,8 +350,7 @@ function Data_WordCloud(datas){
       ]
   */
 
-  for(var i in datas){
-    var d = datas[i].wordcloud;
+    var d = datas.wordcloud;
 
     var data = [];
     var count = 0;
@@ -205,9 +378,9 @@ function Data_WordCloud(datas){
         data.push(word);
     });
 
-    Alldata.push(data);
-  }
-  return Alldata[1];
+    //Alldata.push(data);
+
+  return data;
 }
 
 
@@ -268,7 +441,8 @@ function Data_Bar(datas){
         sum_mid_neg+=d[k].neg;
         count_mid++;
       }
-      else if (k=='TK'||k=='OK'||k=='AR'||k=='LA'||k=='MS'||k=='AL'||k=='TN'||k=='KY'||k=='WV'||k=='VA'||k=='NC'||k=='SC'||k=='GA'||k=='FL'||k=='DE'){//||k='MD') {//South
+      else if (k=='TK'||k=='OK'||k=='AR'||k=='LA'||k=='MS'||k=='AL'||k=='TN'||k=='KY'||k=='WV'||k=='VA'
+      ||k=='NC'||k=='SC'||k=='GA'||k=='FL'||k=='DE'||k=='MD') {//South
         sum_south_pos+=d[k].pos;
         sum_south_neg+=d[k].neg;
         count_south++;
@@ -297,9 +471,5 @@ function Data_Bar(datas){
     data_pos['datasets'] = dataset_pos;
     Alldata['pos'] = data_pos;//แยกไว้ 2 อัน 2 กราฟ
     Alldata['neg'] = data_neg;
-
-    console.log(Alldata.pos);
-
     return Alldata.pos;
-
 }

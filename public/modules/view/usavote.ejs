@@ -1,0 +1,90 @@
+<!-- Controller for angular -->
+<div class="" ng-controller="SparkController">
+
+  <!-- top_graph -->
+  <div class="top_graph"><!-- เป็นส่วนบนที่แสดงโดยรวม -->
+      <div class="row card-2">
+          <div class="col-md-4">
+            <div class="Chart_Doughnut"><!-- Dounghnut -->
+              <canvas id="Chart_Doughnut"></canvas>
+            </div>
+          </div>
+          <div class="col-md-8" style="float:right;"><!-- freq Map Usa  -->
+            <div class="col-md-10">
+              <div id='Datamap_Usa' class='Datamap_Usa'></div>
+            </div>
+            <div class="col-md-2 graph_scale_div">
+              <img class="graph_scale" src="img/scale_min_max.png" alt="">
+            </div>
+          </div>
+      </div>
+
+      <div class="row card-2">
+        <div class="col-md-12">
+          <div class="Chart_Bar"><!-- Bar all pos -->
+            <canvas id="Chart_Bar"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+
+  </div>
+  <!-- end  top_graph -->
+
+
+  <!-- Main_graph -->
+  <!-- Main_graph -->
+  <div class="main_graph">
+
+
+    <!-- replace_graphh --><!-- กราฟในแต่ละ keyword  -->
+    <div id="replace_graph" class="replace_graph">
+
+      <!-- graph card ของแต่ละก้อน keyword  -->
+      <div class="card-2" ng-repeat="data in raw_datas">
+        <div class="node{{$index}}" >
+          <button type='button' name='button' ng-click="hide_show('keyword_{{$index}}')" class='lable_close'>กด</button>
+          <div class="keyword_{{$index}} hide_show row">
+
+            <h1>{{data.keyword}}</h1>
+
+            <div class="col-md-12">
+              <h3 class="grapg_title">Aear</h3>
+              <canvas id="Chart{{$index}}_PosNegArea" ng-init="creat_graph(data,$index)"></canvas><!-- กราฟเส้นเทียบ pos neg  -->
+            </div>
+
+
+            <div class="col-md-12">
+              <h3 class="grapg_title">Map</h3>
+
+              <div class="col-md-10"><!-- กราฟ map เที่ยว pos neg -->
+                <div id="Datamap{{$index}}_PosNeg" class="Datamap_PosNeg"></div>
+              </div>
+              <div class="col-md-2 graph_scale_div">
+                <img class="graph_scale" src="img/scale_pos_neg.png" alt="">
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="col-md-12"><!-- world cloud   -->
+                <h3 class="grapg_title">World cloud</h3>
+                <div id="Chart{{$index}}_WordCloud" class="Word_Cloud"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- end graph card ของแต่ละก้อน keyword  -->
+
+
+    </div>
+    <!-- end replace_graphh -->
+
+  </div>
+  <!-- end Main_graph -->
+  <!-- end Main_graph -->
+
+</div>
+<!-- end Controller for angular -->

@@ -1,18 +1,232 @@
-.map_usa{
-  border:1px dotted blue;
+
+.body_all{
+  background-color: #e9ebee;
+  min-width: 100%;
+  min-height: 100vh;
+}
+.navbar-brand {
+  height: 70px;
+}
+.Navbar_top{
+  z-index: -1000;
+}
+.logo_ku{
+  margin-top: -10px;
+  margin-left: 10px;
+  width: 55%;
+}
+.grapg_title{
+  text-align: center;
+}
+.graph_scale{
+  display: block;
+  margin: auto;
+  height: 250px;
+  float: left;
+}
+.graph_scale_div{
+  height: 100%;
+  padding-top: 100px;
+  padding-left: -200px;
+}
+.top_for_nav{
+  height: 70px;
+}
+.main-view{
+  padding: 20px;
+}
+/*  ####################################### Graph ##############################################  */
+.Chart_PosNegArea{
+  width: 70%;
+  margin:0 auto;
+}
+.Datamap_Usa{
+  width: 800px;
+  height: 375px;
+  float:right;
+  position: relative
+
+}
+.Datamap_PosNeg{
   width: 800px;
   height: 375px;
   float:right;
   position: relative
 }
+.Chart_Doughnut{
+  width: 60%;
 
-.navbar-brand {
-  height: 70px;
 }
-.logo_ku{
-  width: 40%;
+.Chart_Bar{
+  width: 70%;
+  margin:0 auto;
+
+}
+.Word_Cloud{
+  margin-top: -80px;
 }
 .graph_area{
-  width: 20%;
-   display: inline !important;
+  width: 50%;
+}
+.lable_close{
+  float: right;
+}
+/*  ####################################### end Graph ##############################################  */
+
+/* ########################################## edit bootstrap #################################################### */
+
+/* ####################################### Material card ########################################*/
+.card-1 {
+  margin: 10px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.card-1:hover {
+  margin: 10px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.card-2 {
+  margin: 10px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border-radius: 10px;
+}
+
+.card-3 {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.card-4 {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.card-5 {
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+/*#################################### Wrapper + Main mindel ###############################*/
+#wrapper {
+    padding-left: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled {
+    padding-left: 250px;
+}
+
+#Sidebar_wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 0;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    background: #000;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled #Sidebar_wrapper {
+    width: 250px;
+}
+
+#Main_wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px;
+}
+
+#wrapper.toggled #Main_wrapper {
+    position: absolute;
+    margin-right: -250px;
+}
+
+/* Sidebar Styles */
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    text-indent: 20px;
+    line-height: 40px;
+}
+
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+}
+
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+.sidebar-nav > .sidebar-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+    color: #999999;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 0;
+    }
+
+    #wrapper.toggled {
+        padding-left: 250px;
+    }
+
+    #Sidebar_wrapper {
+        width: 0;
+        margin-top: 70px;
+
+    }
+
+    #wrapper.toggled #Sidebar_wrapper {
+        width: 250px;
+    }
+
+    #Main_wrapper {
+        padding: 20px;
+        position: relative;
+    }
+
+    #wrapper.toggled #Main_wrapper {
+        position: relative;
+        margin-right: 0;
+    }
 }
