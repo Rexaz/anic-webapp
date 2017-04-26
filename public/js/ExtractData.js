@@ -82,9 +82,9 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
     var scal_g = 255-(Math.abs(120-(Math.ceil((vote/max_vote)*135)+120)));//เริ่มที่เข้มสุดที่ 120 อ่อนสุด 255
     var scal_rb = 255-(Math.ceil((vote/max_vote)*255));//เริ่มเข้มสุด 0 อ่อนสุด 255
     var scel_color = 'rgb('+scal_rb+' ,'+scal_g+','+scal_rb+')'; //หา scel ระดับสีของแต่ระรัฐ
-    fillColor[scel_color] = scel_color;
+    fillColor[key] = scel_color;
 
-    detail['fillKey'] = scel_color;//สีของพื้นที่นั้น
+    detail['fillKey'] = key;//สีของพื้นที่นั้น
     detail['electoralVotes'] = vote;//จำนวนการ vote
     data[key] = detail;//เอา state แต่ละอันไปใส่ json อันใหม่เพื่อเรืยง
     //console.log(key+" "+detail['fillKey']);
@@ -99,7 +99,6 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
 /////////////////////////Data_PosNegMap
 function Data_PosNegMap(datas){
   var Alldata ={};//data ข้อมูลแต่ละระรัฐพร้อม ส่งให้ Datamap_Usa เพื่อแสดง map
-  console.log(datas);
   var location = datas.location;
 
   /*for(var r in region){//เพื่อให้ รัฐ ที่ไม่มีใน mongo มีค่าเป็น 0
@@ -137,7 +136,7 @@ function Data_PosNegMap(datas){
     var neg = location[key].neg;
 
     var scal_b = Math.ceil((pos/pos_neg)*255);//rate_pos
-    if(pos == 0 && neg == 0){scal_b = 0;}// 0/0 หาค่าไม่ได้
+    if(pos == 0 && neg == 0){scal_b = 127;}// 0/0 หาค่าไม่ได้ ถ้า scal_b = 127 ,scal_r = 128 จะได้สีม่วงตรงกลาง
     var scal_r = 255-scal_b;//rate_neg
     var scel_color = 'rgba('+scal_r+', 0, '+scal_b+', '+alpha+')'; //หา scel ระดับสีของแต่ระรัฐ
     fillColor[scel_color] = scel_color;
@@ -266,12 +265,15 @@ function Data_PosNegArea(datas,type){
                       dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
                       dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
                       dataset_pos['data'] = data_pos;
+                      console.log(dataset_pos['data']);
 
                   var dataset_neg = {};
                       dataset_neg['label'] = 'negative';
                       dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
                       dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
                       dataset_neg['data'] = data_neg;
+                      console.log(dataset_neg['data']);
+
 
                   var dataset = [];
                   dataset.push(dataset_pos);

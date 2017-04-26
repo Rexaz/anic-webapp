@@ -5,7 +5,7 @@
   <div class="" ng-repeat="data in list_steaming"><!-- รับข้อมูลจาก controller ตัวแปล $scope.list_steaming มา repeat -->
     <div class="">
       <h3>Topic</h3>
-      <a ui-sref="Steaming?topic{{data.topic}}"><h4>{{data.topic}}</h4></a>
+      <a href="#!/steaming?topic={{data.topic}}"><h4>{{data.topic}}</h4></a>
     </div>
 
     <div class="">

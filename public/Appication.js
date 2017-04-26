@@ -6,7 +6,6 @@
     //Main controller ##################################################################################################################
     anicApp.controller('MainController', function ($scope, $http, $q, $compile) {//dependency injection --> $scope $http เข้าไป //$q สำหรับจัดการ Promise HTTP Request ตาม q ไม่ง้ั้น ข้อมูลจะ null
 
-
     });
     //End Main controller ##################################################################################################################
 
@@ -15,7 +14,6 @@
 
       httpGet_data()//get Obj from mongodb
         .then(function(raw_data) {//แกะ object Object.$$state.value //ได้รับ return จาก httpGet_usaVote
-            console.log(raw_data);
             //top
             var data_doughnut = Data_Doughnut(raw_data);//get data to Doughnut
             Chart_Doughnut(data_doughnut);//เรียกให้แสดงผล กราฟโดนัด โดยส่ง data ไปแสดง
@@ -65,7 +63,7 @@
 
     /////////////////////////////// function in anugular
     $scope.hide_show = function(index){//hide and show div for graph by keyword
-      $('.'+index).toggle();
+      $('.keyword_'+index).toggle();
     };
 
 
@@ -93,7 +91,6 @@
       httpGet_data()//get Obj from mongodb
         .then(function(data) {//แกะ object Object.$state.value //ได้รับ return จาก httpGet_usaVote
 
-          console.log(data);
           $scope.list_steaming = data;
 
 
@@ -121,8 +118,7 @@
 
 
     //Steaming controller ##################################################################################################################
-    anicApp.controller('SteamingController', function ($scope, $http, $q, $compile) {//dependency injection --> $scope $http เข้าไป //$q สำหรับจัดการ Promise HTTP Request ตาม q ไม่ง้ั้น ข้อมูลจะ null
-
+    anicApp.controller('SteamingController', function ($scope, $http, $q, $compile, $location) {//dependency injection --> $scope $http เข้าไป //$q สำหรับจัดการ Promise HTTP Request ตาม q ไม่ง้ั้น ข้อมูลจะ null// $location สามารถรับค่า param query จาก Url
 
       httpGet_data()//get Obj from mongodb
         .then(function(raw_data) {//แกะ object Object.$$state.value //ได้รับ return จาก httpGet_usaVote
@@ -156,7 +152,7 @@
                 angular.element(document).ready(function() {//ใส่เพื่อ ให้ ่js รอ html พร้อม gen เส็จเเล้วทำ ไม่งั้น จะ getElementById ไม่เจอ
 
                   //PosNegArea กราฟเทียบ pos neg ตามช่วงแต่ละวัน ของ keyword
-                  var data_PosNegArea = Data_PosNegArea(data,'mins');
+                  var data_PosNegArea = Data_PosNegArea(data,'days');
                   Chart_PosNegArea(data_PosNegArea,index);
 
                   //map usa pos_neg
@@ -179,15 +175,84 @@
 
     /////////////////////////////// function in anugular
     $scope.hide_show = function(index){//hide and show div for graph by keyword
-      $('.'+index).toggle();
+      $('.keyword_'+index).toggle();
     };
+
+    $scope.chang_type_time = function(type,index){
+      httpGet_data()//get Obj from mongodb
+        .then(function(raw_data) {
+          var list_data = [];
+
+          Object.keys(raw_data[0].data).forEach(function(key) {//แปลงจาก Hashmap ของ java เป็น list
+            list_data.push(raw_data[0].data[key]);
+          });
+
+
+          var data_posNegArea = Data_PosNegArea(list_data[index] , type);
+          console.log(data_posNegArea);
+          Update_Chart_PosNegArea(data_posNegArea,index);
+
+
+        });
+
+    }
+
+
+    $scope.rexazz = function(){
+
+      httpGet_data_bytopic('Steaming')//get Obj from mongodb
+        .then(function(raw_data) {
+          var list_data = [];
+
+          Object.keys(raw_data[0].data).forEach(function(key) {//แปลงจาก Hashmap ของ java เป็น list
+            list_data.push(raw_data[0].data[key]);
+          });
+
+          //Doughnut
+          var data_doughnut = Data_Doughnut(list_data);//get data to Doughnut
+          Update_Chart_Doughnut(data_doughnut);
+
+          //map feg
+          var data_usaVote = Data_UsaVote(list_data);//get data to map usa
+          Update_Datamap_Usa(data_usaVote);
+
+          //PosNegArea เปลี่ยนทุกกราฟ ทุก key
+          for(var i in list_data){//วนทำในแต่ละ keyword
+
+            //map neg positive
+            //var data_PosNegMap = Data_PosNegMap(list_data[i]);
+            //Update_Datamap_PosNeg(data_PosNegMap,i);
+
+            var data_posNegArea = Data_PosNegArea(list_data[i] , 'mins');
+            Update_Chart_PosNegArea(data_posNegArea,i);
+          }
+
+
+        });
+    }
+
+
 
 
     function httpGet_data(){
+      var topic_param = $location.search().topic; //รับ param query จาก url เพิ่อ ระบุ topic
+
       var deferred = $q.defer();//เริ่มทำงาน มีก่ารทำ q ให้ รอตรงนี้ให้เส็จก่อนค่อยไป
       $http({
            method: 'GET',
-           url: '/steaming_data?topic=Steaming'
+           url: '/steaming_data?topic='+topic_param
+        }).then(function (success){
+          deferred.resolve(success.data);// เสร็จแล้วเอาไปเลย!!
+        },function (error){
+      });
+      return deferred.promise; //รอตามสัญญา ขอเวลาอีกไม่นาน
+    }
+
+    function httpGet_data_bytopic(topic){
+      var deferred = $q.defer();//เริ่มทำงาน มีก่ารทำ q ให้ รอตรงนี้ให้เส็จก่อนค่อยไป
+      $http({
+           method: 'GET',
+           url: '/steaming_data?topic='+topic
         }).then(function (success){
           deferred.resolve(success.data);// เสร็จแล้วเอาไปเลย!!
         },function (error){

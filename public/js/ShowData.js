@@ -1,8 +1,9 @@
 
-///////////////////////////// Map usa
+//#################################################################### Map usa
+var map;
 function Datamap_Usa(usa,index){//show usa map
 
-  var map = new Datamap({
+  map = new Datamap({
     scope: 'usa',
     element: document.getElementById("Datamap_Usa"),
     geographyConfig: {
@@ -26,12 +27,31 @@ function Datamap_Usa(usa,index){//show usa map
     map.labels();
 	}
 
+  function Update_Datamap_Usa(usa){
+    var data = usa.data;
+    var fills = usa.fillColor;
+
+    var electoralVotes = {};
+    var fill = {};
+
+    Object.keys(data).forEach(function(key) {
+      electoralVotes[key] = {'electoralVotes' : data[key].electoralVotes};
+      fill[key] = fills[key];
+    });
+
+    map.updateChoropleth(electoralVotes);
+    map.updateChoropleth(fill);
+  }
+//#################################################################### End Map usa
 
 
-  ///////////////////////////// Map usa Pos neg เทียบกัน ของแต่ละ keyword
+
+//#################################################################### Map usa Pos neg เทียบกัน ของแต่ละ keyword
+//var map_PosNeg = [];
   function Datamap_PosNeg(usa,index){//show usa map
     //$( ".keyword"+index ).append( "<div id='Datamap"+index+"_PosNeg' class='Datamap_PosNeg'></div>" );
-    var map = new Datamap({
+
+    var map_PosNeg = new Datamap({
       scope: 'usa',
       element: document.getElementById("Datamap"+index+"_PosNeg"),
       geographyConfig: {
@@ -51,13 +71,33 @@ function Datamap_Usa(usa,index){//show usa map
           fills:usa.fillColor,
       data:usa.data
       });
-      map.labels();
+      map_PosNeg.labels();
   	}
 
+    function Update_Datamap_PosNeg(usa,i){
+      var data = usa.data;
+      var fills = usa.fillColor;
+
+      var electoralVotes = {};
+      var fill = {};
+
+      Object.keys(data).forEach(function(key) {
+        electoralVotes[key] = {'electoralVotes' : data[key].electoralVotes};
+        fill[key] = fills[key];
+      });
+
+      map_PosNeg[i].updateChoropleth(electoralVotes);
+      map_PosNeg[i].updateChoropleth(fill);
+    }
+//#################################################################### End Map usa Pos neg
 
 
-/////////////////////////// Dounghnut
+//#################################################################### Dounghnut
+var Chart_Doughnut_data;
+var chart_doughnut;
 function Chart_Doughnut(data){
+  data_test = data;
+
    var config = {
        type: 'doughnut',
        data: data,
@@ -67,8 +107,8 @@ function Chart_Doughnut(data){
                position: 'top',
            },
            title: {
-               display: true,
-               text: 'Chart.js Doughnut Chart'
+               //display: true,
+               //text: 'Chart.js Doughnut Chart'
            },
            animation: {
                animateScale: true,
@@ -78,15 +118,26 @@ function Chart_Doughnut(data){
    };
 
  var ctx = document.getElementById("Chart_Doughnut").getContext("2d");
- myDoughnut = new Chart(ctx, config);
-
-
+ chart_doughnut = new Chart(ctx, config);
 }
 
-///////////////////////// Area
+//function update ช้อมูลแบบ realtime
+function Update_Chart_Doughnut(data){
+  Chart_Doughnut_data = data;
+  chart_doughnut.update();//ให้ กราฟ donut ทำการ update เป็นข้อมูลใหม่
+}
+//#################################################################### End Dounghnut
+
+
+//#################################################################### PosNegArea
+//ตัวแปลที่ประกาศเป็น array สำหรับไว้ update ฬนแต่ละ keyword
+var chart_posNegArea = [];
+var Chart_PosNegArea_data = [];
 function Chart_PosNegArea(data,index){
   //var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     //$( ".keyword_"+index ).append( "<canvas id='Chart"+index+"_PosNegArea'></canvas>" );
+
+    Chart_PosNegArea_data[index] = data;//เก็บตัวแปลเอาไว้สำหรับ update ได้
 
 		var config = {
 			type: 'line',
@@ -121,10 +172,19 @@ function Chart_PosNegArea(data,index){
 			}
 		};
 		var ctx = document.getElementById("Chart"+index+"_PosNegArea");
-		window.myLine = new Chart(ctx, config);
+		chart_posNegArea[index] = new Chart(ctx, config);
 }
 
-///////////////////////// Area
+function Update_Chart_PosNegArea(data , index){
+  Chart_PosNegArea_data[index].datasets = data.datasets;
+  Chart_PosNegArea_data[index].labels = data.labels;
+  chart_posNegArea[index].update();
+}
+//#################################################################### End PosNegArea
+
+
+
+//#################################################################### Wordcloud
 function Chart_WordCloud(data,index){
   //http://bl.ocks.org/ericcoopey/6382449
 
@@ -161,8 +221,9 @@ function Chart_WordCloud(data,index){
                .text(function(d) { return d.text; });
    }
 }
+//#################################################################### End Wordcloud
 
-//////////////////////////Chart_Bar
+//####################################################################Chart_Bar
 function Chart_Bar(data){
 
   var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -191,3 +252,5 @@ function Chart_Bar(data){
 
         };
 }
+
+//#################################################################### End Chart_Bar

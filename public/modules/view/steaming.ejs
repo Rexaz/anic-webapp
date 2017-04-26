@@ -6,11 +6,13 @@
       <div class="row card-2">
           <div class="col-md-4">
             <div class="Chart_Doughnut"><!-- Dounghnut -->
+              <h3>สัดส่วนทั้งหมด</h3>
               <canvas id="Chart_Doughnut"></canvas>
             </div>
           </div>
           <div class="col-md-8" style="float:right;"><!-- freq Map Usa  -->
             <div class="col-md-10">
+              <h3>การโหวตแต่ละรัฐ</h3>
               <div id='Datamap_Usa' class='Datamap_Usa'></div>
             </div>
             <div class="col-md-2 graph_scale_div">
@@ -36,27 +38,32 @@
   <!-- Main_graph -->
   <!-- Main_graph -->
   <div class="main_graph">
+    <button id="addDataset" type="button" name="button" ng-click="rexazz()" >Chang</button>
 
 
     <!-- replace_graphh --><!-- กราฟในแต่ละ keyword  -->
-    <div id="replace_graph" class="replace_graph">
+    <div id="replace_graph" class="replace_graph" >
 
       <!-- graph card ของแต่ละก้อน keyword  -->
       <div class="card-2" ng-repeat="data in raw_datas">
         <div class="node{{$index}}" >
-          <button type='button' name='button' ng-click="hide_show('keyword_{{$index}}')" class='lable_close'>กด</button>
+          <button type='button' name='button' ng-click="hide_show($index)" class='lable_close'>กด</button>
           <div class="keyword_{{$index}} hide_show row">
 
             <h1>{{data.keyword}}</h1>
 
             <div class="col-md-12">
-              <h3 class="grapg_title">Aear</h3>
+              <h3 class="grapg_title">ปริมาณ เชิงบวก เชิงลบ ตามช่วงเวลา</h3>
               <canvas id="Chart{{$index}}_PosNegArea" ng-init="creat_graph(data,$index)"></canvas><!-- กราฟเส้นเทียบ pos neg  -->
             </div>
-
+            <div class="">
+              <button type="button" name="button" ng-click="chang_type_time('days',$index)">Day</button>
+              <button type="button" name="button" ng-click="chang_type_time('hours',$index)">Hour</button>
+              <button type="button" name="button" ng-click="chang_type_time('mins',$index)">Min</button>
+            </div>
 
             <div class="col-md-12">
-              <h3 class="grapg_title">Map</h3>
+              <h3 class="grapg_title">เชิงบวก เชิงลบ ในแต่ละรัฐ</h3>
 
               <div class="col-md-10"><!-- กราฟ map เที่ยว pos neg -->
                 <div id="Datamap{{$index}}_PosNeg" class="Datamap_PosNeg"></div>
@@ -68,7 +75,7 @@
 
             <div class="col-md-12">
               <div class="col-md-12"><!-- world cloud   -->
-                <h3 class="grapg_title">World cloud</h3>
+                <h3 class="grapg_title">คำที่กล่าวถึงมากที่สุด</h3>
                 <div id="Chart{{$index}}_WordCloud" class="Word_Cloud"></div>
               </div>
             </div>
