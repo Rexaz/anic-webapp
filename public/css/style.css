@@ -1,4 +1,10 @@
-
+body{
+  font-family: 'RexazFont';
+  font-size: 3em;
+}
+.not_enter{
+  width: 50%;
+}
 .body_all{
   background-color: #e9ebee;
   min-width: 100%;
@@ -10,10 +16,13 @@
 .Navbar_top{
   z-index: -1000;
 }
+.navbar{
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  }
 .logo_ku{
   margin-top: -10px;
   margin-left: 10px;
-  width: 55%;
+  width: 28%;
 }
 .grapg_title{
   text-align: center;
@@ -34,6 +43,22 @@
 }
 .main-view{
   padding: 20px;
+}
+.div_hide{
+  height: 30px;
+}
+
+
+
+@font-face {
+  font-family: 'RexazFont';
+
+  src: url('/fonts/rexaz/ThaiSansNeue.eot');
+  src: url('/fonts/rexaz/ThaiSansNeue.eot?#iefix') format('embedded-opentype'),
+   url('/fonts/rexaz/ThaiSansNeue.woff2') format('woff2'),
+   url('/fonts/rexaz/ThaiSansNeue.woff') format('woff'),
+   url('/fonts/rexaz/ThaiSansNeue.ttf') format('truetype'),
+   url('/fonts/rexaz/ThaiSansNeue.svg#RexazFont') format('svg');
 }
 /*  ####################################### Graph ##############################################  */
 .Chart_PosNegArea{

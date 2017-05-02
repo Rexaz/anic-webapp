@@ -1,6 +1,6 @@
 //mongoose connect
 var mongoose = require('mongoose');
-var uri = "mongodb://localhost/ANIC";
+var uri = "mongodb://Anic:AnicPass@localhost/ANIC";
 var db = mongoose.connect(uri,function(err, db) {
   if(!err) {
     console.log("connected mongodb");

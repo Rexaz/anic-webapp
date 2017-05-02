@@ -50,6 +50,7 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
   var sum = 0;
   var arr_vote = [];
 
+  var total_nokey =0;//รวมการ vote ที่ไม่มี kwyword
   Object.keys(location).forEach(function(key) {
     if(key!="" && key !="USA" && key != null && key != 'null'){
       var total = 0;
@@ -69,10 +70,27 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
         total +=pos+neg;//รวม pos neg ของทุก keyword
       }
       location[key]['total'] = total;//ฝาก total ไว้ที่ ช่อง 0 เป็นค่าที่ รวม การ vote จากทุก key ของแต่ละรัฐ
-
       arr_vote.push(total);//เอา total ไป รวมกัน
     }
+    else{
+      for(var i in datas){//แต่ละ keyword
+        var pos =0;
+        try{pos = datas[i].location[key].pos;}
+        catch(err){pos =0;}
+
+        var neg =0;
+        try{neg = datas[i].location[key].neg;}
+        catch(err){neg =0;}
+
+        /*if(pos == null){pos=0;}
+        if(neg == null){neg =0;}*/
+
+        total_nokey +=pos+neg;//รวม pos neg ของ ที่ไม่มีkeyword
+      }
+    }
   });
+  console.log(total_nokey);//ฝาก total ไว้ที่ ช่อง 0 เป็นค่าที่ รวม การ vote จากทุก key ของแต่ละรัฐ
+
   var max_vote = Math.max.apply(null, arr_vote);//เอา vote อันที่มากสุดตั้งใน การหาสี เข้มสุด
 
   Object.keys(location).forEach(function(key) {//loop get key
@@ -91,6 +109,8 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
     });
     Alldata['data'] = data;
     Alldata['fillColor'] = fillColor;
+    Alldata['total_nokey'] = total_nokey;//รวมการ vote ที่ไม่มี keyword
+
     return Alldata;//คืนค้าพร้อม ที่แสดง แผนที่
 }
 
@@ -238,6 +258,61 @@ function Data_PosNegArea(datas,type){
 
 
       //Object.keys(d.datetime).forEach(function(key) {//loop get key
+      Object.keys(datetime).forEach(function(key_date) {//loop get date key
+          labels.push(key_date);//fide labal datetime
+
+          var date_pos = 0;// ผลรวม pos ของแต่ละ date
+          var date_neg = 0;
+          var time = datetime[key_date]; //time of day
+          Object.keys(time).forEach(function(key_time) {//loop get time key
+            date_pos+=datetime[key_date][key_time].pos;
+            date_neg+=datetime[key_date][key_time].neg;
+          });
+          data_pos.push(date_pos);//ใส่ข้อมูลให้ data ที่เป็น pos
+          data_neg.push(date_neg);
+
+      });
+//////////////////////
+            //Object.keys(d.datetime).forEach(function(key) {//loop get key
+          Object.keys(datetime).forEach(function(key) {//loop get key
+              labels.push(key);//fide labal datetime
+              data_pos.push(datetime[key].pos);//ใส่ข้อมูลให้ data ที่เป็น pos
+              data_neg.push(datetime[key].neg);
+          });
+///////////////////
+                  var dataset_pos = {};
+                      dataset_pos['label'] = 'positive';
+                      dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
+                      dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
+                      dataset_pos['data'] = data_pos;
+
+                  var dataset_neg = {};
+                      dataset_neg['label'] = 'negative';
+                      dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
+                      dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
+                      dataset_neg['data'] = data_neg;
+
+
+                  var dataset = [];
+                  dataset.push(dataset_pos);
+                  dataset.push(dataset_neg);
+            data['labels'] = labels;
+            data['datasets'] = dataset;
+
+    }
+
+
+    ////////////////////////// days
+    if(type === 'days_ofusa'){//แสดง graph area เป็น แบบ วัน
+
+      Object.keys(d).sort(function(a, b) {//เรียงวันที่ by key
+          return moment(a, 'DD/MM/YYYY').toDate() - moment(b, 'DD/MM/YYYY').toDate();
+        }).forEach(function(key) {
+          datetime[key]= d[key];
+      });
+
+
+      //Object.keys(d.datetime).forEach(function(key) {//loop get key
       /*Object.keys(datetime).forEach(function(key_date) {//loop get date key
           labels.push(key_date);//fide labal datetime
 
@@ -265,14 +340,13 @@ function Data_PosNegArea(datas,type){
                       dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
                       dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
                       dataset_pos['data'] = data_pos;
-                      console.log(dataset_pos['data']);
 
                   var dataset_neg = {};
                       dataset_neg['label'] = 'negative';
+
                       dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
                       dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
                       dataset_neg['data'] = data_neg;
-                      console.log(dataset_neg['data']);
 
 
                   var dataset = [];
@@ -282,13 +356,30 @@ function Data_PosNegArea(datas,type){
             data['datasets'] = dataset;
 
     }
+
+
     ///////////////////////////////// mins
-    else if (type === 'mins') {
+    else if (type === 'hours') {
 
         Object.keys(d).sort(function(a, b) {//เรียงวันที่ by key
             return moment(a, 'DD/MM/YYYY').toDate() - moment(b, 'DD/MM/YYYY').toDate();
           }).forEach(function(key) {
-            datetime[key] = d[key];
+          //datetime[key]= d[key];
+            var dt = [];
+
+            Object.keys(d[key]).forEach(function(key_h) {
+              var HH = key_h.substring(0, 2)+":00:00";
+              if(dt[HH] === undefined){//ชม ที่ยังไม่เคยมีมาก่อน
+                dt[HH] = d[key][key_h];
+              }
+              else {// มี HH นี้แล้ว
+                dt[HH].pos +=  d[key][key_h].pos;
+                dt[HH].neg +=  d[key][key_h].neg;
+              }
+
+            });
+
+            datetime[key] = dt;
         });
 
         //Object.keys(d.datetime).forEach(function(key) {//loop get key
@@ -296,7 +387,7 @@ function Data_PosNegArea(datas,type){
 
             var time = {}; //time of day
             Object.keys(datetime[key_date]).sort(function(a, b) {//เรียง time่ by key
-                return moment(a, 'HH:mm').toDate() - moment(b, 'HH:mm').toDate();
+                return moment(a, 'HH').toDate() - moment(b, 'HH').toDate();
               }).forEach(function(key) {
                 time[key]= datetime[key_date][key];
             });
@@ -314,19 +405,68 @@ function Data_PosNegArea(datas,type){
                         dataset_pos['label'] = 'positive';
                         dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
                         dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
-                        dataset_pos['data'] = data_pos;
+                        dataset_pos['data'] = data_pos.slice(-24);//เอา 24 ชม ล่าสุด
 
                     var dataset_neg = {};
                         dataset_neg['label'] = 'negative';
                         dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
                         dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
-                        dataset_neg['data'] = data_neg;
+                        dataset_neg['data'] = data_neg.slice(-24);
 
                     var dataset = [];
                     dataset.push(dataset_pos);
                     dataset.push(dataset_neg);
-              data['labels'] = labels;
+              data['labels'] = labels.slice(-24);
               data['datasets'] = dataset;
+    }
+
+    ///////////////////////////////// mins
+    else if (type === 'mins') {
+
+        var length_min;//ขนาดความยาวของเวลาทั้งหมด
+        Object.keys(d).sort(function(a, b) {//เรียงวันที่ by key
+            return moment(a, 'DD/MM/YYYY').toDate() - moment(b, 'DD/MM/YYYY').toDate();
+          }).forEach(function(key) {
+            datetime[key] = d[key];
+        });
+        //Object.keys(d.datetime).forEach(function(key) {//loop get key
+        Object.keys(datetime).forEach(function(key_date) {//loop get date key
+
+            var time = {}; //time of day
+            Object.keys(datetime[key_date]).sort(function(a, b) {//เรียง time่ by key
+                return moment(a, 'HH:mm').toDate() - moment(b, 'HH:mm').toDate();
+              }).forEach(function(key) {
+                time[key]= datetime[key_date][key];
+            });
+
+            Object.keys(time).forEach(function(key_time) {//loop get time key
+              var time_pos = datetime[key_date][key_time].pos;// ผลรวม pos ของแต่ละ date
+              var time_neg = datetime[key_date][key_time].neg;
+              labels.push(key_date+" "+key_time);//fide labal datetime
+              data_pos.push(time_pos);//ใส่ข้อมูลให้ data ที่เป็น pos
+              data_neg.push(time_neg);
+
+            });
+        });
+                    var dataset_pos = {};
+                        dataset_pos['label'] = 'positive';
+                        dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
+                        dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
+                        dataset_pos['data'] = data_pos.slice(-60);//เอา 60 นาทีล่าสุด
+
+                    var dataset_neg = {};
+                        dataset_neg['label'] = 'negative';
+                        dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
+                        dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
+                        dataset_neg['data'] = data_neg.slice(-60);
+
+                    var dataset = [];
+                    dataset.push(dataset_pos);
+                    dataset.push(dataset_neg);
+
+              data['labels'] = labels.slice(-60);
+              data['datasets'] = dataset;
+              console.log();
     }
 
 

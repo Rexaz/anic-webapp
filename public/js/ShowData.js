@@ -1,8 +1,14 @@
 
 //#################################################################### Map usa
 var map;
-function Datamap_Usa(usa,index){//show usa map
+function Datamap_Usa(usa){//show usa map
 
+  console.log(usa.total_nokey);
+
+  /*var element_total = document.getElementById('total_nokey');
+  console.log(element_total);
+  element_total.value = "ffff";
+  */
   map = new Datamap({
     scope: 'usa',
     element: document.getElementById("Datamap_Usa"),
@@ -136,7 +142,6 @@ var Chart_PosNegArea_data = [];
 function Chart_PosNegArea(data,index){
   //var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     //$( ".keyword_"+index ).append( "<canvas id='Chart"+index+"_PosNegArea'></canvas>" );
-
     Chart_PosNegArea_data[index] = data;//เก็บตัวแปลเอาไว้สำหรับ update ได้
 
 		var config = {
@@ -158,7 +163,7 @@ function Chart_PosNegArea(data,index){
 					xAxes: [{
 						scaleLabel: {
 							display: true,
-							labelString: 'Month'
+							labelString: 'DateTime'
 						}
 					}],
 					yAxes: [{
@@ -175,9 +180,10 @@ function Chart_PosNegArea(data,index){
 		chart_posNegArea[index] = new Chart(ctx, config);
 }
 
-function Update_Chart_PosNegArea(data , index){
+function Update_Chart_PosNegArea(data, index, type){
   Chart_PosNegArea_data[index].datasets = data.datasets;
   Chart_PosNegArea_data[index].labels = data.labels;
+  type_time = type;
   chart_posNegArea[index].update();
 }
 //#################################################################### End PosNegArea

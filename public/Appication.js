@@ -38,7 +38,7 @@
                 angular.element(document).ready(function() {//ใส่เพื่อ ให้ ่js รอ html พร้อม gen เส็จเเล้วทำ ไม่งั้น จะ getElementById ไม่เจอ
 
                 //PosNegArea กราฟเทียบ pos neg ตามช่วงแต่ละวัน ของ keyword
-                var data_PosNegArea = Data_PosNegArea(data,'days');
+                var data_PosNegArea = Data_PosNegArea(data,'days_ofusa');
                 Chart_PosNegArea(data_PosNegArea,index);
 
                 //map usa pos_neg
@@ -152,7 +152,7 @@
                 angular.element(document).ready(function() {//ใส่เพื่อ ให้ ่js รอ html พร้อม gen เส็จเเล้วทำ ไม่งั้น จะ getElementById ไม่เจอ
 
                   //PosNegArea กราฟเทียบ pos neg ตามช่วงแต่ละวัน ของ keyword
-                  var data_PosNegArea = Data_PosNegArea(data,'days');
+                  var data_PosNegArea = Data_PosNegArea(data,'mins');
                   Chart_PosNegArea(data_PosNegArea,index);
 
                   //map usa pos_neg
@@ -187,10 +187,9 @@
             list_data.push(raw_data[0].data[key]);
           });
 
-
           var data_posNegArea = Data_PosNegArea(list_data[index] , type);
-          console.log(data_posNegArea);
-          Update_Chart_PosNegArea(data_posNegArea,index);
+          //console.log(data_posNegArea);
+          Update_Chart_PosNegArea(data_posNegArea,index,type);
 
 
         });
@@ -198,9 +197,8 @@
     }
 
 
-    $scope.rexazz = function(){
-
-      httpGet_data_bytopic('Steaming')//get Obj from mongodb
+    $scope.update_data = function(){
+      httpGet_data()//get Obj from mongodb
         .then(function(raw_data) {
           var list_data = [];
 

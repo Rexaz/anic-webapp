@@ -45,8 +45,8 @@
 
       <!-- graph card ของแต่ละก้อน keyword  -->
       <div class="card-2" ng-repeat="data in raw_datas">
-        <div class="node{{$index}}" >
-          <button type='button' name='button' ng-click="hide_show($index)" class='lable_close'>กด</button>
+        <div class="node{{$index}}">
+          <span class="glyphicon glyphicon-option-horizontal lable_close" aria-hidden="true"  ng-click="hide_show($index)" ></span>
           <div class="keyword_{{$index}} hide_show row">
 
             <h1>{{data.keyword}}</h1>
