@@ -6,6 +6,8 @@
     //Main controller ##################################################################################################################
     anicApp.controller('MainController', function ($scope, $http, $q, $compile) {//dependency injection --> $scope $http เข้าไป //$q สำหรับจัดการ Promise HTTP Request ตาม q ไม่ง้ั้น ข้อมูลจะ null
 
+
+
     });
     //End Main controller ##################################################################################################################
 
@@ -50,6 +52,7 @@
                 Chart_WordCloud(data_WordCloud,index);
 
                 });
+
 
 
 
@@ -132,10 +135,14 @@
             //top
             var data_doughnut = Data_Doughnut(list_data);//get data to Doughnut
             Chart_Doughnut(data_doughnut);//เรียกให้แสดงผล กราฟโดนัด โดยส่ง data ไปแสดง
+            Summary_Chart_Doughnut(data_doughnut.labels,data_doughnut.data_persen);//ให้ไปแสดงสรุปค่า %
+
 
             //map usa feq
             var data_usaVote = Data_UsaVote(list_data);//get data to map usa
             Datamap_Usa(data_usaVote);//แสดง กราฟ usa จากไฟล์ anic.js
+            Summary_Datamap_Usa(data_usaVote);
+
 
             var data_Bar = Data_Bar(list_data);
             Chart_Bar(data_Bar);
@@ -158,11 +165,16 @@
                   //map usa pos_neg
                   var data_PosNegMap = Data_PosNegMap(list_data[index]);
                   Datamap_PosNeg(data_PosNegMap,index);
+                  Summary_Datamap_PosNeg(data_PosNegMap,index);
 
                   //wordcloud
                   var data_WordCloud = Data_WordCloud(list_data[index]);
                   Chart_WordCloud(data_WordCloud,index);
 
+
+                  /*if(index != 0){
+                    $(".tab_"+index).removeClass("active");
+                  }*/
                 });
 
 
@@ -174,10 +186,6 @@
       });///end httpGet_usaVote for Asyco //นอกจากนี้ จะแสดงก่อน ตรงนี้
 
     /////////////////////////////// function in anugular
-    $scope.hide_show = function(index){//hide and show div for graph by keyword
-      $('.keyword_'+index).toggle();
-    };
-
     $scope.chang_type_time = function(type,index){
       httpGet_data()//get Obj from mongodb
         .then(function(raw_data) {

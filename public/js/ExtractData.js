@@ -10,7 +10,7 @@ var color =[
 
 var region = ['AK','WA','OR','CA','NV','HI','UT','AZ','ID','MT','WY','CO','NM',//West
   'ND','SD','NE','KS','MN','IA','MO','WI','IL','IN','MI','OH',//MiD-west
-  'TK','OK','AR','LA','MS','AL','TN','KY','WV','VA','NC','SC','GA','FL','DE','MD',//South
+  'TK','OK','AR','LA','MS','AL','TN','KY','WV','VA','NC','SC','GA','FL','DE','MD','TX',//South
   'PA','NY','NJ','CT','VT','NH','ME','MA','RI']//North-east
 
 ////////////////////////////
@@ -48,15 +48,13 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
   var fillColor ={};
 
   var sum = 0;
-  var arr_vote = [];
-
-  var total_nokey =0;//รวมการ vote ที่ไม่มี kwyword
+  var arr_vote = [];//เพื่อหา max vote state
+  var total_of_usa = 0;//รวมการ vote ของ usa ทั้งหมด
+  var total_out_of_usa =0;//รวมการ vote ที่ไม่มี kwyword
   Object.keys(location).forEach(function(key) {
-    if(key!="" && key !="USA" && key != null && key != 'null'){
+    if(key!="" && key != null && key != 'null'){
       var total = 0;
-
       for(var i in datas){//แต่ละ keyword
-        var pos =0;
         try{pos = datas[i].location[key].pos;}
         catch(err){pos =0;}
 
@@ -64,13 +62,15 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
         try{neg = datas[i].location[key].neg;}
         catch(err){neg =0;}
 
-        /*if(pos == null){pos=0;}
-        if(neg == null){neg =0;}*/
-
         total +=pos+neg;//รวม pos neg ของทุก keyword
+
+        if(key !="USA"){//เอา usa มารวมกับเเต่ละรัฐไม่ได้
+          location[key]['total'] = total;//ฝาก total ไว้ที่ ช่อง 0 เป็นค่าที่ รวม การ vote จากทุก key ของแต่ละรัฐ
+          arr_vote.push(total);//เอา total ไป รวมกัน
+        }
+        total_of_usa+=total;
       }
-      location[key]['total'] = total;//ฝาก total ไว้ที่ ช่อง 0 เป็นค่าที่ รวม การ vote จากทุก key ของแต่ละรัฐ
-      arr_vote.push(total);//เอา total ไป รวมกัน
+
     }
     else{
       for(var i in datas){//แต่ละ keyword
@@ -85,14 +85,14 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
         /*if(pos == null){pos=0;}
         if(neg == null){neg =0;}*/
 
-        total_nokey +=pos+neg;//รวม pos neg ของ ที่ไม่มีkeyword
+        total_out_of_usa +=pos+neg;//รวม pos neg ของ ที่ไม่มีkeyword
       }
     }
   });
-  console.log(total_nokey);//ฝาก total ไว้ที่ ช่อง 0 เป็นค่าที่ รวม การ vote จากทุก key ของแต่ละรัฐ
 
   var max_vote = Math.max.apply(null, arr_vote);//เอา vote อันที่มากสุดตั้งใน การหาสี เข้มสุด
 
+  var list_state =[];//เพื่อ หา top vote state
   Object.keys(location).forEach(function(key) {//loop get key
     var detail ={};
     var vote =  location[key].total;//รวม vote ทั้งหมด จาก pos neg
@@ -106,13 +106,25 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
     detail['electoralVotes'] = vote;//จำนวนการ vote
     data[key] = detail;//เอา state แต่ละอันไปใส่ json อันใหม่เพื่อเรืยง
     //console.log(key+" "+detail['fillKey']);
+
+      if(key !="USA" && key!="" && key != null && key != 'null'){//เอาไปใส่ array เพื่อนำไป sort
+        var state = {state:key , vote:vote};
+        list_state.push(state);
+      }
     });
+    var sort_list_state = list_state.sort(function(a, b) {//sort vote ทั้งหมดจากมากไปน้อย
+        return parseFloat(b.vote) - parseFloat(a.vote);
+    });
+
     Alldata['data'] = data;
     Alldata['fillColor'] = fillColor;
-    Alldata['total_nokey'] = total_nokey;//รวมการ vote ที่ไม่มี keyword
+    Alldata['total_of_usa'] = total_of_usa;//รวมการ vote ที่อยู่ใน usa
+    Alldata['total_out_of_usa'] = total_out_of_usa;
+    Alldata['sort_list_state'] = sort_list_state;//vote จากมากไปน้อย
 
     return Alldata;//คืนค้าพร้อม ที่แสดง แผนที่
 }
+
 
 
 //////////////////////////
@@ -146,16 +158,20 @@ function Data_PosNegMap(datas){
     }
   });
   //var max_vote = Math.max.apply(null, arr_vote);//เอา vote อันที่มากสุดตั้งใน การหาสี เข้มสุด
+  var scal_pos = [];//ไว้สำหรับหา top pos neg
+  var scal_neg = [];//ไว้สำหรับหา top pos neg
+
   Object.keys(location).forEach(function(key) {//loop get key
     var detail ={};
     //console.log(location[key].pos +" "+ location[key].neg);
     var pos_neg =  location[key].pos + location[key].neg;//รวม vote ทั้งหมด จาก pos neg
-    var alpha  = 1;//((pos_neg/max_vote).toFixed(3)); //ความโปล่งใส .3 แหน่ง
+    var alpha  = 0.8;//((pos_neg/max_vote).toFixed(3)); //ความโปล่งใส .3 แหน่ง
 
     var pos = location[key].pos;//ค่า บวก
     var neg = location[key].neg;
 
     var scal_b = Math.ceil((pos/pos_neg)*255);//rate_pos
+    //var scal_b = Math.ceil((pos/pos_neg)*17)*15;
     if(pos == 0 && neg == 0){scal_b = 127;}// 0/0 หาค่าไม่ได้ ถ้า scal_b = 127 ,scal_r = 128 จะได้สีม่วงตรงกลาง
     var scal_r = 255-scal_b;//rate_neg
     var scel_color = 'rgba('+scal_r+', 0, '+scal_b+', '+alpha+')'; //หา scel ระดับสีของแต่ระรัฐ
@@ -166,9 +182,26 @@ function Data_PosNegMap(datas){
     detail['electoralVotes'] = "pos: "+location[key].pos +", neg: "+location[key].neg;//ค่าที่แสดงตอนชี้
     data[key] = detail;//เอา state แต่ละอันไปใส่ json อันใหม่เพื่อเรืยง
     //console.log(key+" "+detail['fillKey']);
+
+    if(key!="" && key !="USA" && key != null && key != 'null'){//หาสรุปใส่ตาราง
+      var _pos = pos/(pos+neg);
+      var _neg = neg/(pos+neg);
+      scal_pos.push({state:key, neg:neg, pos:pos, scal:_pos});//ใส่เก็บ การเทียบ top pos neg
+      scal_neg.push({state:key, neg:neg, pos:pos, scal:_neg});//ใส่เก็บ การเทียบ top pos neg
+      }
     });
+    scal_pos.sort(function(a, b){return b.scal - a.scal});//เรียน ข้อมูล แต่ละรัฐ ว่า top pos neg
+    scal_neg.sort(function(a, b){return b.scal - a.scal});//เรียน ข้อมูล แต่ละรัฐ ว่า top pos neg
+
+
+
+
     Alldata['data'] = data;
     Alldata['fillColor'] = fillColor;
+    Alldata['scal_pos'] = scal_pos;
+    Alldata['scal_neg'] = scal_neg;
+
+
     return Alldata;//คืนค้าพร้อม ที่แสดง แผนที่
 }
 
@@ -193,11 +226,26 @@ function Data_Doughnut(datas){
               var backgroundColor= [];
               var label = "Doughnut Anic";
         var labels = [];
+
+    var total_vote =0;//vote ทั้งหมด
     for(var i in datas){//loop all keyword
-            data.push(datas[i].sentiment.pos + datas[i].sentiment.neg); //คำ pos+negใน sentiment
-            backgroundColor.push(color[i]);//เพิ่ม สีให้โดยเอามาจากช่อง array สี
-            labels.push(datas[i].keyword);
+      //ส่วนข้อมูลกราฟ โนนัท
+      var pos_neg = datas[i].sentiment.pos + datas[i].sentiment.neg;
+      data.push(pos_neg); //คำ pos+negใน sentiment
+      backgroundColor.push(color[i]);//เพิ่ม สีให้โดยเอามาจากช่อง array สี
+      labels.push(datas[i].keyword);
+
+      //ส่วนสรุป
+      total_vote+=pos_neg;
     }
+    var data_persen =[];
+    for(var i in data){//หาสัดส่วน % แต่ละ keyword
+      data_persen.push(((data[i]/total_vote)*100).toFixed(2));
+    }
+
+
+
+
           var obj0 = {};
           obj0['data'] = data;
           obj0['backgroundColor'] = backgroundColor;
@@ -205,6 +253,7 @@ function Data_Doughnut(datas){
         datasets.push(obj0);
     allData['datasets'] = datasets;
     allData['labels'] = labels;
+    allData['data_persen'] = data_persen;//ค่าที่ เป็นสัดส่วน % แสดงเป็นตารางเอง
 
     Chart_Doughnut(allData);//เรียกให้แสดงผล กราฟโดนัด
 
@@ -282,13 +331,13 @@ function Data_PosNegArea(datas,type){
 ///////////////////
                   var dataset_pos = {};
                       dataset_pos['label'] = 'positive';
-                      dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
+                      dataset_pos['borderColor'] = 'rgb(255, 255, 255)';
                       dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
                       dataset_pos['data'] = data_pos;
 
                   var dataset_neg = {};
                       dataset_neg['label'] = 'negative';
-                      dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
+                      dataset_neg['borderColor'] = 'rgb(255, 255, 255)';
                       dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
                       dataset_neg['data'] = data_neg;
 

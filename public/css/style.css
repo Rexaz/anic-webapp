@@ -30,7 +30,7 @@ body{
 .graph_scale{
   display: block;
   margin: auto;
-  height: 250px;
+  height: 150px;
   float: left;
 }
 .graph_scale_div{
@@ -46,6 +46,10 @@ body{
 }
 .div_hide{
   height: 30px;
+}
+
+.font{
+  font-family: 'RexazFont';
 }
 
 

@@ -3,12 +3,6 @@
 var map;
 function Datamap_Usa(usa){//show usa map
 
-  console.log(usa.total_nokey);
-
-  /*var element_total = document.getElementById('total_nokey');
-  console.log(element_total);
-  element_total.value = "ffff";
-  */
   map = new Datamap({
     scope: 'usa',
     element: document.getElementById("Datamap_Usa"),
@@ -18,7 +12,7 @@ function Datamap_Usa(usa){//show usa map
       borderColor: 'rgba(147,147,147,0.5)',//สี border
 
    popupTemplate: function(geography, data) {
-      return '<div class="hoverinfo">' + geography.properties.name + ' Electoral Votes:' +  data.electoralVotes + ' '
+      return '<div class="hoverinfo">' + geography.properties.name + ' Electoral Votes:' +  data.electoralVotes.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' '
     },
     highlightBorderWidth: 3
   },
@@ -30,8 +24,50 @@ function Datamap_Usa(usa){//show usa map
         fills:usa.fillColor,
         data:usa.data
     });
-    map.labels();
-	}
+    map.labels({labelColor: '#000', fontSize: 12});
+  }
+
+
+  function Summary_Datamap_Usa(data){
+    var element_total_of_usa = $('#total_of_usa');//ทำการ แสดงจำนวนการ vote ที่ไม่ได้อยู่ใน map
+    element_total_of_usa.append(fide_to_roman(data.total_of_usa));//fide_to_roman ทำให้ย่อตัวเลขได้
+    var element_total_out_of_usa = $('#total_out_of_usa');//ทำการ แสดงจำนวนการ vote ที่ไม่ได้อยู่ใน map
+    element_total_out_of_usa.append(fide_to_roman(data.total_out_of_usa));
+
+    var table = $('#Summary_Datamap_Usa');
+    var top_state = data.sort_list_state.slice(0, 5); //เอา state ที่มีการ vote มากที่สุด 5 รัฐมา
+    for(var i in top_state){
+      var rank = parseInt(i)+1;
+      if(i==0){//ถ้าเป็น อันดับ แรกที่มากสุดจะตัวใหญ่
+        var element = "<tr>"+
+                        "<td class=''><h2>"+rank+"</h2></td>"+
+                        "<td class=''><h2>"+top_state[i].state+" vote</h2></td>"+
+                        "<td class=''><h2>"+top_state[i].vote+" vote</h2></td>"+
+                      "</tr>";
+      }
+      else if(i==1) {
+        var element = "<tr>"+
+                        "<td class=''><h3>"+rank+"</h3></td>"+
+                        "<td class=''><h3>"+top_state[i].state+" vote</h3></td>"+
+                        "<td class=''><h3>"+top_state[i].vote+" vote</h3></td>"+
+                      "</tr>";
+      }
+      else {
+        var element = "<tr>"+
+                        "<td class=''><h4>"+rank+"</h4></td>"+
+                        "<td class=''><h4>"+top_state[i].state+" vote</h4></td>"+
+                        "<td class=''><h4>"+top_state[i].vote+" vote</h4></td>"+
+                      "</tr>";
+      }
+
+
+      table.append(element);
+    }
+
+
+
+
+  }
 
   function Update_Datamap_Usa(usa){
     var data = usa.data;
@@ -62,14 +98,14 @@ function Datamap_Usa(usa){//show usa map
       element: document.getElementById("Datamap"+index+"_PosNeg"),
       geographyConfig: {
         highlightFillColor: 'rgba(147,147,147,0.5)',
-        highlightBorderColor: 'rgba(147,147,147,1)',
-        borderColor: 'rgba(147,147,147,0.5)',
+        highlightBorderColor: 'rgba(147,147,147,0.5)',
+        borderColor: 'rgba(255,255,255,1)',
      popupTemplate: function(geography, data) {
-        return '<div class="hoverinfo">' + geography.properties.name + ' ' +  data.electoralVotes + ' '
+        return '<div class="hoverinfo">' + geography.properties.name + ' ' +  data.electoralVotes.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' '
       },
       highlightBorderWidth: 3
     },
-    done: function(datamap) {
+    function(datamap) {
               datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
                   alert(geography.properties.name);
               });
@@ -77,8 +113,73 @@ function Datamap_Usa(usa){//show usa map
           fills:usa.fillColor,
       data:usa.data
       });
-      map_PosNeg.labels();
+      map_PosNeg.labels({labelColor: '#000', fontSize: 12});
+
   	}
+    function Summary_Datamap_PosNeg(data,index){
+
+      var table_pos = $('#Summary_Datamap_PosNeg_pos'+index);
+      var table_neg = $('#Summary_Datamap_PosNeg_neg'+index);
+
+      console.log(table_neg);
+
+      var top_pos = data.scal_pos.slice(0, 5); //เอา state ที่มีการ vote มากที่สุด 5 รัฐมา
+      var top_neg = data.scal_neg.slice(0, 5);
+      //top pos
+      for(var i in top_pos){
+        var rank = parseInt(i)+1;
+        if(i==0){//ถ้าเป็น อันดับ แรกที่มากสุดจะตัวใหญ่
+          var element = "<tr>"+
+                          "<td class=''><h2>"+rank+"</h2></td>"+
+                          "<td class=''><h2>"+top_pos[i].state+" vote</h2></td>"+
+                          "<td class=''><h2>"+top_pos[i].pos+":"+top_pos[i].neg+" vote</h2></td>"+
+                        "</tr>";
+        }
+        else if(i==1) {
+          var element = "<tr>"+
+                          "<td class=''><h3>"+rank+"</h3></td>"+
+                          "<td class=''><h3>"+top_pos[i].state+" vote</h3></td>"+
+                          "<td class=''><h3>"+top_pos[i].pos+":"+top_pos[i].neg+" vote</h3></td>"+
+                        "</tr>";
+        }
+        else {
+          var element = "<tr>"+
+                          "<td class=''><h4>"+rank+"</h4></td>"+
+                          "<td class=''><h4>"+top_pos[i].state+" vote</h4></td>"+
+                          "<td class=''><h4>"+top_pos[i].pos+":"+top_pos[i].neg+" vote</h4></td>"+
+                        "</tr>";
+        }
+        table_pos.append(element);
+      }
+      //top neg
+      for(var i in top_neg){
+        var rank = parseInt(i)+1;
+        if(i==0){//ถ้าเป็น อันดับ แรกที่มากสุดจะตัวใหญ่
+          var element = "<tr>"+
+                          "<td class=''><h2>"+rank+"</h2></td>"+
+                          "<td class=''><h2>"+top_neg[i].state+" vote</h2></td>"+
+                          "<td class=''><h2>"+top_neg[i].neg+":"+top_neg[i].pos+" vote</h2></td>"+
+                        "</tr>";
+        }
+        else if(i==1) {
+          var element = "<tr>"+
+                          "<td class=''><h3>"+rank+"</h3></td>"+
+                          "<td class=''><h3>"+top_neg[i].state+" vote</h3></td>"+
+                          "<td class=''><h3>"+top_neg[i].neg+":"+top_neg[i].pos+" vote</h3></td>"+
+                        "</tr>";
+        }
+        else {
+          var element = "<tr>"+
+                          "<td class=''><h4>"+rank+"</h4></td>"+
+                          "<td class=''><h4>"+top_neg[i].state+" vote</h4></td>"+
+                          "<td class=''><h4>"+top_neg[i].neg+":"+top_neg[i].pos+" vote</h4></td>"+
+                        "</tr>";
+        }
+        table_neg.append(element);
+      }
+
+
+    }
 
     function Update_Datamap_PosNeg(usa,i){
       var data = usa.data;
@@ -91,7 +192,6 @@ function Datamap_Usa(usa){//show usa map
         electoralVotes[key] = {'electoralVotes' : data[key].electoralVotes};
         fill[key] = fills[key];
       });
-
       map_PosNeg[i].updateChoropleth(electoralVotes);
       map_PosNeg[i].updateChoropleth(fill);
     }
@@ -108,9 +208,21 @@ function Chart_Doughnut(data){
        type: 'doughnut',
        data: data,
        options: {
-           responsive: true,
+           responsive: false,
            legend: {
-               position: 'top',
+               position: 'bottom',
+               labels: {
+                 fontSize : 20
+                }
+           },
+           tooltips: {
+              mode: 'index',
+              bodyFontSize :20,
+              callbacks: {
+                  label: function(tooltipItem, data) {
+                    return data.labels[tooltipItem.index]+" : "+data.datasets[0].data[tooltipItem.index].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+" vote";
+                  }
+              },
            },
            title: {
                //display: true,
@@ -125,6 +237,33 @@ function Chart_Doughnut(data){
 
  var ctx = document.getElementById("Chart_Doughnut").getContext("2d");
  chart_doughnut = new Chart(ctx, config);
+}
+
+function Summary_Chart_Doughnut(label,data){//สรุปมาเป็น %
+  var table = $('#Summary_Chart_Doughnut');
+  console.log(table);
+  for(var i in data){
+    var rank = parseInt(i)+1;
+    if(i==0){//ถ้าเป็น อันดับ แรกที่มากสุดจะตัวใหญ่
+      var element = "<tr>"+
+                      "<td class=''><h2>"+rank+"</h2></td>"+
+                      "<td class=''><h2>"+label[i]+" "+data[i]+"%</h2></td>"+
+                    "</tr>";
+    }
+    else if(i==1){
+      var element = "<tr>"+
+                      "<td class=''><h3>"+rank+"</h3></td>"+
+                      "<td class=''><h3>"+label[i]+" "+data[i]+"%</h3></td>"+
+                    "</tr>";
+    }
+    else {
+      var element = "<tr>"+
+                      "<td class=''><h4>"+rank+"</h4></td>"+
+                      "<td class=''><h4>"+label[i]+" "+data[i]+"%</h4></td>"+
+                    "</tr>";
+    }
+    table.append(element);//เพิ่ม row
+  }
 }
 
 //function update ช้อมูลแบบ realtime
@@ -149,29 +288,52 @@ function Chart_PosNegArea(data,index){
 			data: data,
 			options: {
 				responsive: true,
+        legend: {
+            position: 'top',
+            labels: {
+              fontSize : 25
+         }
+       },
 				title:{
 					display:true,
 					//text:"Chart.js Line Chart - Stacked Area"
 				},
 				tooltips: {
 					mode: 'index',
+          titleFontSize : 25,
+          bodyFontSize :20,
+          callbacks: {
+              label: function(tooltipItem, data) {
+                return data.datasets[tooltipItem.datasetIndex].label+" "+tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")+" vote";
+              }
+          }
 				},
 				hover: {
 					mode: 'index'
 				},
+
 				scales: {
 					xAxes: [{
 						scaleLabel: {
 							display: true,
-							labelString: 'DateTime'
-						}
+							labelString: 'DateTime',
+              fontSize: 20
+						},
+          ticks: {
+                  fontSize: 15
+              }
 					}],
 					yAxes: [{
 						stacked: false,
 						scaleLabel: {
 							display: true,
-							labelString: 'Value'
-						}
+							labelString: 'Vote',
+              fontSize: 20
+						},
+        ticks: {
+                fontSize: 15,
+                callback: function(label, index, labels) { return label.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); },
+            }
 					}]
 				}
 			}
@@ -260,3 +422,13 @@ function Chart_Bar(data){
 }
 
 //#################################################################### End Chart_Bar
+function fide_to_roman(num){//แปลงรูปตัวเลขให้อยู่ดุง่าย
+  //ย่อ จำนวนการ vote ที่อยู่ใน usa
+  if(num >= 1000000){// >1M
+    num = (num/1000000).toFixed(2)+" M";
+  }
+  else if (num >= 1000) {
+    num = (num/1000).toFixed(2)+" K";
+  }
+  return num;
+}
