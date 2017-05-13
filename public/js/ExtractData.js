@@ -175,11 +175,11 @@ function Data_PosNegMap(datas){
     if(pos == 0 && neg == 0){scal_b = 127;}// 0/0 หาค่าไม่ได้ ถ้า scal_b = 127 ,scal_r = 128 จะได้สีม่วงตรงกลาง
     var scal_r = 255-scal_b;//rate_neg
     var scel_color = 'rgba('+scal_r+', 0, '+scal_b+', '+alpha+')'; //หา scel ระดับสีของแต่ระรัฐ
-    fillColor[scel_color] = scel_color;
+    fillColor[key] = scel_color;
     //console.log(scel_color);
 
-    detail['fillKey'] = scel_color;//สีของพื้นที่นั้น
-    detail['electoralVotes'] = "pos: "+location[key].pos +", neg: "+location[key].neg;//ค่าที่แสดงตอนชี้
+    detail['fillKey'] = key;//สีของพื้นที่นั้น
+    detail['electoralVotes'] = "| Positive: "+location[key].pos +" ข้อความ , Negative: "+location[key].neg+" ข้อความ";//ค่าที่แสดงตอนชี้
     data[key] = detail;//เอา state แต่ละอันไปใส่ json อันใหม่เพื่อเรืยง
     //console.log(key+" "+detail['fillKey']);
 
@@ -240,11 +240,9 @@ function Data_Doughnut(datas){
     }
     var data_persen =[];
     for(var i in data){//หาสัดส่วน % แต่ละ keyword
-      data_persen.push(((data[i]/total_vote)*100).toFixed(2));
+      data_persen.push({keyword:labels[i], persen:((data[i]/total_vote)*100).toFixed(2)});
     }
-
-
-
+    data_persen.sort(function(a, b){return b.persen-a.persen});
 
           var obj0 = {};
           obj0['data'] = data;
@@ -262,7 +260,15 @@ function Data_Doughnut(datas){
 
 //////////////////////////
 /////////////////////////Data_PosNegArea
+
+var type_datetime ;
 function Data_PosNegArea(datas,type){
+  if(type == "null"){
+    type =type_datetime;
+  }
+  else {//สำหรับ Update จะเอาค่า type ล่าสุดที่เรากดดู
+    type_datetime = type;
+  }
   //   d.datetime.sort(function(a,b){
   //   // Turn your strings into dates, and then subtract them
   //   // to get a value that is either negative, positive, or zero.
@@ -298,7 +304,6 @@ function Data_PosNegArea(datas,type){
 
     ////////////////////////// days
     if(type === 'days'){//แสดง graph area เป็น แบบ วัน
-
       Object.keys(d).sort(function(a, b) {//เรียงวันที่ by key
           return moment(a, 'DD/MM/YYYY').toDate() - moment(b, 'DD/MM/YYYY').toDate();
         }).forEach(function(key) {
@@ -515,7 +520,6 @@ function Data_PosNegArea(datas,type){
 
               data['labels'] = labels.slice(-60);
               data['datasets'] = dataset;
-              console.log();
     }
 
 
@@ -540,9 +544,7 @@ function Data_WordCloud(datas){
           }
       ]
   */
-
     var d = datas.wordcloud;
-
     var data = [];
     var count = 0;
     Object.keys(d).forEach(function(key) {//loop get key
@@ -551,26 +553,25 @@ function Data_WordCloud(datas){
 
         count++;
         if(count<=5){
-          size = 45;
+          size = 55;
         }
         else if (count<=10&&count>5) {
-          size = 35;
+          size = 45;
         }
         else if (count<=15&&count>10) {
-          size = 25;
+          size = 35;
         }
         else if (count>15) {
-          size =15;
+          size =25;
         }
 
             var word = {};
             word['text'] = test;
             word['size'] = size;
+            word['feq'] = d[key];
         data.push(word);
     });
-
     //Alldata.push(data);
-
   return data;
 }
 

@@ -51,8 +51,16 @@ body{
 .font{
   font-family: 'RexazFont';
 }
-
-
+.well{
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.btn_datetime {
+  max-width: 400px;
+}
+.btn_datetime > button{
+  padding: 0;
+}
 
 @font-face {
   font-family: 'RexazFont';
@@ -68,6 +76,9 @@ body{
 .Chart_PosNegArea{
   width: 70%;
   margin:0 auto;
+}
+.div_Chart_PosNegArea{
+  max-width:1600px;
 }
 .Datamap_Usa{
   width: 800px;
@@ -100,6 +111,21 @@ body{
 .lable_close{
   float: right;
 }
+.Tabel_Summary_Datamap_Usa{
+  width: 70%;
+}
+.Summary_of_map{
+  text-align: center;
+}
+.rank_1{
+  color: #333333;
+}
+.rank_2{
+  color: rgb(170, 170, 170);
+}
+.rank_3{
+  color: rgb(221, 221, 221);
+}
 /*  ####################################### end Graph ##############################################  */
 
 /* ########################################## edit bootstrap #################################################### */
@@ -122,7 +148,7 @@ body{
 
 .card-2 {
   margin: 10px;
-  padding: 20px;
+  padding: 50px;
   background-color: #fff;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   border-radius: 10px;

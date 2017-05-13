@@ -1,95 +1,172 @@
 <!-- Controller for angular -->
 <div class="" ng-controller="SparkController">
 
-  <!-- top_graph -->
-  <div class="top_graph"><!-- เป็นส่วนบนที่แสดงโดยรวม -->
-      <div class="row card-2">
-          <div class="col-md-4">
-            <div class="Chart_Doughnut"><!-- Dounghnut -->
-              <h3>สัดส่วนทั้งหมด</h3>
-              <canvas id="Chart_Doughnut"></canvas>
-            </div>
-          </div>
-          <div class="col-md-8" style="float:right;"><!-- freq Map Usa  -->
-            <div class="col-md-10">
-              <h2>จำนวนการ vote ใน usa <strong id="total_of_usa"></strong><h2>
-              <h2>จำนวนการ vote ที่ไม่ค้นพบ <strong id="total_out_of_usa"></strong><h2>
+    <!-- top_graph -->
+    <div class="top_graph"><!-- เป็นส่วนบนที่แสดงโดยรวม -->
+        <div class="row card-2">
+            <div class="col-md-4">
 
-              <h3>การโหวตแต่ละรัฐ</h3>
-              <div id='Datamap_Usa' class='Datamap_Usa'></div>
-            </div>
-            <div class="col-md-2 graph_scale_div">
-              <img class="graph_scale" src="img/scale_min_max.png" alt="">
-            </div>
-          </div>
-      </div>
+              <div class="Chart_Doughnut"><!-- Dounghnut -->
+                <h1>สัดส่วนคำค้นหาทั้งหมด</h1>
+                <canvas id="Chart_Doughnut"></canvas>
+              </div>
 
-      <div class="row card-2">
-        <div class="col-md-12">
-          <div class="Chart_Bar"><!-- Bar all pos -->
-            <canvas id="Chart_Bar"></canvas>
+              <div class=""><!-- สรุป % -->
+                <table id="Summary_Chart_Doughnut" class="table table-hover">
+                </table>
+              </div>
+
+            </div>
+
+            <div class="col-md-8" style="float:right;"><!-- freq Map Usa  -->
+              <div class="row">
+
+                <div class="col-md-10">
+                  <div class="">
+                    <h1>จำวนวนข้อความในแต่ละรัฐ</h1>
+                    <div id='Datamap_Usa' class='Datamap_Usa'></div>
+                  </div>
+
+                </div>
+                <div class="col-md-2 graph_scale_div">
+                  <img class="graph_scale" src="img/scale_min_max.png" alt="">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="Summary_of_map">
+                  <h3>จำนวนข้อความที่พบใน สหรัฐอเมริกา <strong id="total_of_usa"></strong><h3>
+                  <h3>จำนวนข้อความที่ไม่ได้อยู่ใน สหรัฐอเมริกา <strong id="total_out_of_usa"></strong><h3>
+                </div>
+                <div class="Tabel_Summary_Datamap_Usa center-block">
+                  <h2>จำนวนข้อความที่พบมากสุดใน 5 รัฐแรก</h2>
+                  <table id="Summary_Datamap_Usa" class="table table-hover">
+                  </table>
+                </div>
+              </div>
           </div>
+
         </div>
-
-      </div>
-
-
-  </div>
-  <!-- end  top_graph -->
-
-
-  <!-- Main_graph -->
-  <!-- Main_graph -->
-  <div class="main_graph">
-
-
-    <!-- replace_graphh --><!-- กราฟในแต่ละ keyword  -->
-    <div id="replace_graph" class="replace_graph">
-
-      <!-- graph card ของแต่ละก้อน keyword  -->
-      <div class="card-2" ng-repeat="data in raw_datas">
-        <div class="node{{$index}}">
-          <span class="glyphicon glyphicon-option-horizontal lable_close" aria-hidden="true"  ng-click="hide_show($index)" ></span>
-          <div class="keyword_{{$index}} hide_show row">
-
-            <h1>{{data.keyword}}</h1>
-
-            <div class="col-md-12">
-              <h3 class="grapg_title">ปริมาณ เชิงบวก เชิงลบ ตามช่วงเวลา</h3>
-              <canvas id="Chart{{$index}}_PosNegArea" ng-init="creat_graph(data,$index)"></canvas><!-- กราฟเส้นเทียบ pos neg  -->
-            </div>
-
-
-            <div class="col-md-12">
-              <h3 class="grapg_title">เชิงบวก เชิงลบ ในแต่ละรัฐ</h3>
-
-              <div class="col-md-10"><!-- กราฟ map เที่ยว pos neg -->
-                <div id="Datamap{{$index}}_PosNeg" class="Datamap_PosNeg"></div>
-              </div>
-              <div class="col-md-2 graph_scale_div">
-                <img class="graph_scale" src="img/scale_pos_neg.png" alt="">
-              </div>
-            </div>
-
-            <div class="col-md-12">
-              <div class="col-md-12"><!-- world cloud   -->
-                <h3 class="grapg_title">คำที่กล่าวถึงมากที่สุด</h3>
-                <div id="Chart{{$index}}_WordCloud" class="Word_Cloud"></div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-      <!-- end graph card ของแต่ละก้อน keyword  -->
 
 
     </div>
-    <!-- end replace_graphh -->
+    <!-- end  top_graph -->
 
-  </div>
-  <!-- end Main_graph -->
-  <!-- end Main_graph -->
+
+    <!-- Main_graph -->
+    <!-- Main_graph -->
+    <div class="main_graph">
+
+      <!-- all tab+detail graph -->
+      <!-- all tab+detail graph -->
+      <div class="card-2">
+
+          <!--repeat for tab  -->
+          <ul class="nav nav-tabs" role="tablist">
+            <li ng-repeat="data in raw_datas" ng-class="{active: $index==0}" >
+              <a href=".tab_{{$index}}" role="tab" data-toggle="tab" >{{data.keyword}}</a>
+            </li>
+          </ul>
+          <!--end repeat for tab  -->
+          <!-------------------------------------------------------------------->
+
+          <!-- replace_graphh --><!-- กราฟในแต่ละ keyword  -->
+          <div id="replace_graph" class="replace_graph tab-content" >
+            <!-- graph card ของแต่ละก้อน keyword  -->
+            <div class="tab-pane tab_{{$index}} active" ng-repeat="data in raw_datas">
+              <div class="node{{$index}}">
+                <div class="keyword_{{$index}} hide_show row">
+
+
+                  <div class="col-md-12">
+                    <h1 class="grapg_title">ปริมาณข้อความ บวก/ลบ ของคำค้น {{data.keyword}} แต่ละช่วงเวลาตั่งแต่ ... ถึง ...</h1>
+
+                    <div class="div_Chart_PosNegArea">
+                      <canvas id="Chart{{$index}}_PosNegArea" ng-init="creat_graph(data,$index)"></canvas><!-- กราฟเส้นเทียบ pos neg  -->
+                    </div>
+                    <div class="col-md-12">
+                      <div class="btn_datetime center-block">
+                        <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                          <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" ng-click="chang_type_time('days',$index)"><h5>Day</h5></button>
+                          </div>
+                          <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" ng-click="chang_type_time('hours',$index)"><h5>Hour</h5></button>
+                          </div>
+                          <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" ng-click="chang_type_time('mins',$index)"><h5>Minute</h5></button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                  <div class="col-md-12 well center-block">
+
+                    <div class="">
+                      <h1 class="grapg_title">ความถี่ข้อความ บวก/ลบ ของแต่ละรัฐ</h1>
+
+                      <div class="col-md-10"><!-- กราฟ map เที่ยว pos neg -->
+                        <div id="Datamap{{$index}}_PosNeg" class="Datamap_PosNeg"></div>
+                      </div>
+                      <div class="col-md-2 graph_scale_div">
+                        <img class="graph_scale" src="img/scale_pos_neg.png" alt="">
+                      </div>
+                    </div>
+
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h1>Top 5 pos</h1>
+                        <table id="Summary_Datamap_PosNeg_pos{{$index}}" class="table table-hover">
+                        </table>
+                      </div>
+                      <div class="col-md-6">
+                        <h1>Top 5 neg</h1>
+                        <table id="Summary_Datamap_PosNeg_neg{{$index}}" class="table table-hover">
+                        </table>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="col-md-12">
+                    <div class="col-md-12"><!-- world cloud   -->
+                      <div class="col-md-6">
+                        <br>
+                        <br>
+                        <br>
+                        <div id="Chart{{$index}}_WordCloud" class="Word_Cloud"></div>
+                      </div>
+                      <div class="col-md-6">
+                        <h1 class="grapg_title">คำที่กล่าวถึงมากที่สุด</h1>
+                        <table id="Summary_Chart_WordCloud{{$index}}" class="table table-hover">
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- end graph card ของแต่ละก้อน keyword  -->
+          </div>
+          <!-- end replace_graphh -->
+
+
+      </div>
+      <!-- end all tab+detail graph -->
+      <!-- end all tab+detail graph -->
+
+
+
+
+
+    </div>
+    <!-- end Main_graph -->
+    <!-- end Main_graph -->
+
 
 </div>
 <!-- end Controller for angular -->
