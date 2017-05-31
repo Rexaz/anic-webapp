@@ -16,6 +16,17 @@
 
       httpGet_data()//get Obj from mongodb
         .then(function(raw_data) {//แกะ object Object.$$state.value //ได้รับ return จาก httpGet_usaVote
+
+
+          //detail
+          console.log(raw_data);
+          $scope.topic = "สำรวจการเลือกตั้ง ประธานาธิบดีสหรัฐอเมริกา";
+          $scope.start_process = date_thai("11/01/2017");
+          $scope.last_update = date_thai("13/02/2017");
+          $scope.status =  check_status_steaming("13/02/2017");
+
+
+
             //top
             var data_doughnut = Data_Doughnut(raw_data);//get data to Doughnut
             Chart_Doughnut(data_doughnut);//เรียกให้แสดงผล กราฟโดนัด โดยส่ง data ไปแสดง
@@ -27,8 +38,13 @@
             Datamap_Usa(data_usaVote);//แสดง กราฟ usa จากไฟล์ anic.js
             Summary_Datamap_Usa(data_usaVote);
 
-            var data_Bar = Data_Bar(raw_data);
-            Chart_Bar(data_Bar);
+            //var data_Bar = Data_Bar(raw_data);
+            //Chart_Bar(data_Bar);
+
+            //Gauge
+            var data_Gauge = Data_Gauge(raw_data);
+            Chart_Gauge(data_Gauge);
+            Summary_Chart_Gauge(data_Gauge);
 
             $scope.raw_datas = raw_data;//data ที่จะโยนไปใส่ ใน function ที่ html ผ่าน ng-inti
 
@@ -89,10 +105,18 @@
       httpGet_data()//get Obj from mongodb
         .then(function(data) {//แกะ object Object.$state.value //ได้รับ return จาก httpGet_usaVote
 
+          for(var d in data){
+            data[d]['status'] = check_status_steaming(data[d].last_update);
+          }
           $scope.list_steaming = data;
 
 
+
         });///end httpGet_usaVote for Asyco //นอกจากนี้ จะแสดงก่อน ตรงนี้
+
+        $scope.dateThai = function(datetime) {
+          return date_thai(datetime);
+        }
 
       /////////////////////////////// function in anugular
 
@@ -117,12 +141,25 @@
     anicApp.controller('SteamingController', function ($scope, $http, $q, $compile, $location, $timeout) {//dependency injection --> $scope $http เข้าไป //$q สำหรับจัดการ Promise HTTP Request ตาม q ไม่ง้ั้น ข้อมูลจะ null// $location สามารถรับค่า param query จาก Url
       httpGet_data()//get Obj from mongodb
         .then(function(raw_data) {//แกะ object Object.$$state.value //ได้รับ return จาก httpGet_usaVote
-
             var list_data = [];
 
             Object.keys(raw_data[0].data).forEach(function(key) {//แปลงจาก Hashmap ของ java เป็น list
               list_data.push(raw_data[0].data[key]);
             });
+
+
+            //detail
+            $scope.topic = raw_data[0].topic;
+            $scope.start_process = date_thai(raw_data[0].start_process);
+            $scope.last_update = date_thai(raw_data[0].last_update);
+            $scope.status = check_status_steaming(raw_data[0].last_update);
+
+
+
+
+
+
+            date_thai(raw_data[0].last_update);
 
             //top
             var data_doughnut = Data_Doughnut(list_data);//get data to Doughnut
@@ -134,8 +171,14 @@
             Datamap_Usa(data_usaVote);//แสดง กราฟ usa จากไฟล์ anic.js
             Summary_Datamap_Usa(data_usaVote);
 
-            var data_Bar = Data_Bar(list_data);
-            Chart_Bar(data_Bar);
+            //var data_Bar = Data_Bar(list_data);
+            //Chart_Bar(data_Bar);
+
+            //Gauge
+            var data_Gauge = Data_Gauge(list_data);
+            Chart_Gauge(data_Gauge);
+            Summary_Chart_Gauge(data_Gauge);
+
 
             $scope.raw_datas = list_data;//data ที่จะโยนไปใส่ ใน function ที่ html ผ่าน ng-inti
             $scope.creat_graph = function(data,index) {//rool from replect
@@ -165,14 +208,14 @@
                   /*if(index != 0){
                     $(".tab_"+index).removeClass("active");
                   }*/
-                  remove_active(index);
+                  remove_active(index);//ลบ class ative ให้กราฟ D3 map ไม่บัค
                   //setTimeout(remove_active(index), 1000);
                 });
             }
             //setTimeout(update_data, 1000);//ให้ set เวลา ในการ update
             //var ee = document.getElementsByClassName("keyword0").style.display = "block";
-            var state = "Steaming";
-            if(state == "Steaming"){
+
+            if(check_status_steaming(raw_data[0].last_update) == "กำลังสำรวจ"){//check status
               setTimeout(update_data, 60000);//ให้ ครั่งแรก อีก 1 นาที จาก เริ่มไปเรยีก update
             }
 
@@ -200,6 +243,12 @@
       console.log("update");
       httpGet_data()//get Obj from mongodb
         .then(function(raw_data) {
+
+          $scope.topic = raw_data[0].topic;
+          $scope.start_process = date_thai(raw_data[0].start_process);
+          $scope.last_update = date_thai(raw_data[0].last_update);
+          $scope.status = check_status_steaming(raw_data[0].last_update);
+
           var list_data = [];
 
           Object.keys(raw_data[0].data).forEach(function(key) {//แปลงจาก Hashmap ของ java เป็น list
@@ -215,6 +264,11 @@
           var data_usaVote = Data_UsaVote(list_data);//get data to map usa
           Update_Datamap_Usa(data_usaVote);
           Summary_Datamap_Usa(data_usaVote);
+
+          //Gauge
+          var data_Gauge = Data_Gauge(list_data);
+          Update_Chart_Gauge(data_Gauge);
+          Summary_Chart_Gauge(data_Gauge);
 
           //PosNegArea เปลี่ยนทุกกราฟ ทุก key
           for(var i in list_data){//วนทำในแต่ละ keyword
@@ -233,7 +287,13 @@
             Update_Chart_WordCloud(data_WordCloud,i);
           }
           ////
-          setTimeout(update_data, 60000);//เรียกใช้ function ตัวเองให้ update
+
+          if(check_status_steaming(raw_data[0].last_update) == "กำลังสำรวจ"){//check status
+            setTimeout(update_data, 60000);//เรียกใช้ function ตัวเองให้ update
+          }
+          else {
+            console.log("Finish");
+          }
         });
     }
 
@@ -272,7 +332,37 @@
 //function รวม นอก angular
 function remove_active(index){//ลบ active class ของ tap
   if(index != 0){
-    console.log(index);
     $(".tab_"+index).removeClass("active");
   }
+}
+function check_status_steaming(datatime){
+
+  var date = new Date().toLocaleString('en-US', { timeZone: 'Asia/Bangkok' });//ใช้ time zone นี้เพราะ java get date ออกมา GTM+0
+  var now_date = moment(date).format('DD/MM/YYYY HH:mm');
+
+  var check_time =  moment.utc(moment(now_date,"DD/MM/YYYY HH:mm").diff(moment(datatime,"DD/MM/YYYY HH:mm"))).format("DD/MM/YYYY HH:mm");//หาค่าระหว่าง วันเวลาให้
+  if(check_time < "01/01/1970 00:01"){//เช็ค เวลาไม่เกิน 2 นาที
+    return "กำลังสำรวจ";
+  }
+  else {
+    return "สิ้นสุดการสำรวจ";
+  }
+
+}
+
+function date_thai(datetime) {
+
+  var months = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+  var date = "1/1/1";
+  var time = "";
+  try {date = datetime.split(" ")[0];} catch (err) {console.log(err);}
+
+  try {time = datetime.split(" ")[1];} catch (err) {}
+  if(!time){
+    time = ""
+  }
+  var arr_date = date.split("/");
+  var month = months[parseInt(arr_date[1])-1];
+  return  arr_date[0]+"/"+month+"/"+arr_date[2]+ " "+time;
+
 }

@@ -2,13 +2,15 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>ANIC</title>
+    <title>Sentiment Analysis text in social networks on web applications</title>
 
     <!-- css -->
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/c3.css">
 
 
+    <link rel="shortcut icon" href="img/ico.ico">
   </head>
   <body ng-app="mainAnicApp">
 
@@ -45,13 +47,13 @@
                       </a>
                   </li>
                   <li>
-                      <a href="#!/">Home</a>
+                      <a href="#!/">หน้าแรก</a>
                   </li>
                   <li>
-                    <a ui-sref='usavote'>Usa vote</a>
+                    <a ui-sref='usavote'>สำรวจเลือกตั้ง</a>
                   </li>
                   <li>
-                      <a ui-sref='list_steaming'>List Steaming</a>
+                      <a ui-sref='list_steaming'>รายการเรียลไทม์</a>
                   </li>
 
               </ul>
@@ -83,9 +85,10 @@
 
   </body>
   <!-- Js -->
-  <script src="/js/d3.v3.min.js"></script>
+  <script src="/js/d3.v3.js"></script>
   <script src="/js/topojson.v1.min.js"></script>
   <script src="/js/datamaps.usa.min.js"></script>
+  <script src="/js/c3.min.js"></script>
 
   <script src="/js/jquery-3.1.1.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>

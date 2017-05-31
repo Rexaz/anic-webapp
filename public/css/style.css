@@ -28,15 +28,20 @@ body{
   text-align: center;
 }
 .graph_scale{
-  display: block;
+  /*display: block;
   margin: auto;
-  height: 150px;
+  width: 40%;
+  float: left;*/
+
+  width: 40%;
   float: left;
+  position: absolute; left: 50%; top: 50%; margin: auto;
+  margin-left: -100px;
 }
 .graph_scale_div{
-  height: 100%;
+  height: 500px;
   padding-top: 100px;
-  padding-left: -200px;
+  padding-left: -400px;
 }
 .top_for_nav{
   height: 70px;
@@ -81,17 +86,14 @@ body{
   max-width:1600px;
 }
 .Datamap_Usa{
-  width: 800px;
-  height: 375px;
-  float:right;
-  position: relative
+  width: 100%;
+  height: 100%;
 
 }
+
 .Datamap_PosNeg{
-  width: 800px;
-  height: 375px;
-  float:right;
-  position: relative
+  width: 100%;
+  height: 100%;
 }
 .Chart_Doughnut{
   width: 60%;
@@ -121,10 +123,36 @@ body{
   color: #333333;
 }
 .rank_2{
-  color: rgb(170, 170, 170);
+  color: #333333;
+  /*color: rgb(170, 170, 170);*/
 }
 .rank_3{
-  color: rgb(221, 221, 221);
+  color: #333333;
+  /*color: rgb(221, 221, 221);*/
+}
+.Summary_Chart_WordCloud{
+  width: 40%;
+}
+.text_center {
+    text-align: center;
+}
+td > h1, td > h2{
+  line-height: .5;
+}
+.text_r{
+  text-align: right;
+}
+.text_l{
+  text-align: left;
+}
+.text_c{
+  text-align: center;
+}
+.scal_table{
+  width: 60%;
+}
+.btn_datetime{
+  font-size: 20px;
 }
 /*  ####################################### end Graph ##############################################  */
 
@@ -186,11 +214,12 @@ body{
     height: 100%;
     margin-left: -250px;
     overflow-y: auto;
-    background: #000;
+    background: #59a672;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
+    /*box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);*/
 }
 
 #wrapper.toggled #Sidebar_wrapper {
@@ -227,7 +256,7 @@ body{
 .sidebar-nav li a {
     display: block;
     text-decoration: none;
-    color: #999999;
+    color: #fff;
 }
 
 .sidebar-nav li a:hover {
@@ -248,7 +277,7 @@ body{
 }
 
 .sidebar-nav > .sidebar-brand a {
-    color: #999999;
+    color: #fff;
 }
 
 .sidebar-nav > .sidebar-brand a:hover {

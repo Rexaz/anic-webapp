@@ -10,7 +10,7 @@ var color =[
 
 var region = ['AK','WA','OR','CA','NV','HI','UT','AZ','ID','MT','WY','CO','NM',//West
   'ND','SD','NE','KS','MN','IA','MO','WI','IL','IN','MI','OH',//MiD-west
-  'TK','OK','AR','LA','MS','AL','TN','KY','WV','VA','NC','SC','GA','FL','DE','MD','TX',//South
+  'OK','AR','LA','MS','AL','TN','KY','WV','VA','NC','SC','GA','FL','DE','MD','TX',//South
   'PA','NY','NJ','CT','VT','NH','ME','MA','RI']//North-east
 
 ////////////////////////////
@@ -49,10 +49,8 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
 
   var sum = 0;
   var arr_vote = [];//เพื่อหา max vote state
-  var total_of_usa = 0;//รวมการ vote ของ usa ทั้งหมด
-  var total_out_of_usa =0;//รวมการ vote ที่ไม่มี kwyword
   Object.keys(location).forEach(function(key) {
-    if(key!="" && key != null && key != 'null'){
+    if(key!="" && key != null && key != 'null' && key !="USA"){
       var total = 0;
       for(var i in datas){//แต่ละ keyword
         try{pos = datas[i].location[key].pos;}
@@ -63,32 +61,12 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
         catch(err){neg =0;}
 
         total +=pos+neg;//รวม pos neg ของทุก keyword
-
-        if(key !="USA"){//เอา usa มารวมกับเเต่ละรัฐไม่ได้
-          location[key]['total'] = total;//ฝาก total ไว้ที่ ช่อง 0 เป็นค่าที่ รวม การ vote จากทุก key ของแต่ละรัฐ
-          arr_vote.push(total);//เอา total ไป รวมกัน
-        }
-        total_of_usa+=total;
-      }
-
-    }
-    else{
-      for(var i in datas){//แต่ละ keyword
-        var pos =0;
-        try{pos = datas[i].location[key].pos;}
-        catch(err){pos =0;}
-
-        var neg =0;
-        try{neg = datas[i].location[key].neg;}
-        catch(err){neg =0;}
-
-        /*if(pos == null){pos=0;}
-        if(neg == null){neg =0;}*/
-
-        total_out_of_usa +=pos+neg;//รวม pos neg ของ ที่ไม่มีkeyword
+        location[key]['total'] = total;//ฝาก total ไว้ที่ ช่อง 0 เป็นค่าที่ รวม การ vote จากทุก key ของแต่ละรัฐ
+        arr_vote.push(total);//เอา total ไป รวมกัน
       }
     }
   });
+
 
   var max_vote = Math.max.apply(null, arr_vote);//เอา vote อันที่มากสุดตั้งใน การหาสี เข้มสุด
 
@@ -118,8 +96,6 @@ function Data_UsaVote(_datas) {//หารูปแบบ data ให้ Datamap
 
     Alldata['data'] = data;
     Alldata['fillColor'] = fillColor;
-    Alldata['total_of_usa'] = total_of_usa;//รวมการ vote ที่อยู่ใน usa
-    Alldata['total_out_of_usa'] = total_out_of_usa;
     Alldata['sort_list_state'] = sort_list_state;//vote จากมากไปน้อย
 
     return Alldata;//คืนค้าพร้อม ที่แสดง แผนที่
@@ -179,22 +155,28 @@ function Data_PosNegMap(datas){
     //console.log(scel_color);
 
     detail['fillKey'] = key;//สีของพื้นที่นั้น
-    detail['electoralVotes'] = "| Positive: "+location[key].pos +" ข้อความ , Negative: "+location[key].neg+" ข้อความ";//ค่าที่แสดงตอนชี้
+    detail['electoralVotes'] = "| ความรู้สึกเชิงบวก (Positive): "+location[key].pos +" ข้อความ , ความรู้สึกเชิงลบ (Negative): "+location[key].neg+" ข้อความ";//ค่าที่แสดงตอนชี้
     data[key] = detail;//เอา state แต่ละอันไปใส่ json อันใหม่เพื่อเรืยง
     //console.log(key+" "+detail['fillKey']);
 
     if(key!="" && key !="USA" && key != null && key != 'null'){//หาสรุปใส่ตาราง
-      var _pos = pos/(pos+neg);
-      var _neg = neg/(pos+neg);
+      var _pos=0;
+      var _neg=0;
+      if(pos == 0 && neg == 0){
+        _pos=0.5;
+        _neg=0.5;
+      }
+      else {
+        _pos = pos/(pos+neg);
+        _neg = neg/(pos+neg);
+      }
+
       scal_pos.push({state:key, neg:neg, pos:pos, scal:_pos});//ใส่เก็บ การเทียบ top pos neg
       scal_neg.push({state:key, neg:neg, pos:pos, scal:_neg});//ใส่เก็บ การเทียบ top pos neg
       }
     });
     scal_pos.sort(function(a, b){return b.scal - a.scal});//เรียน ข้อมูล แต่ละรัฐ ว่า top pos neg
     scal_neg.sort(function(a, b){return b.scal - a.scal});//เรียน ข้อมูล แต่ละรัฐ ว่า top pos neg
-
-
-
 
     Alldata['data'] = data;
     Alldata['fillColor'] = fillColor;
@@ -335,13 +317,13 @@ function Data_PosNegArea(datas,type){
           });
 ///////////////////
                   var dataset_pos = {};
-                      dataset_pos['label'] = 'positive';
+                      dataset_pos['label'] = 'ความรู้สึกเชิงบวก (Positive)';
                       dataset_pos['borderColor'] = 'rgb(255, 255, 255)';
                       dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
                       dataset_pos['data'] = data_pos;
 
                   var dataset_neg = {};
-                      dataset_neg['label'] = 'negative';
+                      dataset_neg['label'] = 'ความรู้สึกเงินลบ (Negative)';
                       dataset_neg['borderColor'] = 'rgb(255, 255, 255)';
                       dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
                       dataset_neg['data'] = data_neg;
@@ -390,13 +372,13 @@ function Data_PosNegArea(datas,type){
           });
 ///////////////////
                   var dataset_pos = {};
-                      dataset_pos['label'] = 'positive';
+                      dataset_pos['label'] = 'ความรู้สึกเชิงบวก (Positive)';
                       dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
                       dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
                       dataset_pos['data'] = data_pos;
 
                   var dataset_neg = {};
-                      dataset_neg['label'] = 'negative';
+                      dataset_neg['label'] = 'ความรู้สึกเชิงลบ (Negative)';
 
                       dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
                       dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
@@ -456,13 +438,13 @@ function Data_PosNegArea(datas,type){
         });
 
                     var dataset_pos = {};
-                        dataset_pos['label'] = 'positive';
+                        dataset_pos['label'] = 'คามรู้สึกเชิงบวก (Positive)';
                         dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
                         dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
                         dataset_pos['data'] = data_pos.slice(-24);//เอา 24 ชม ล่าสุด
 
                     var dataset_neg = {};
-                        dataset_neg['label'] = 'negative';
+                        dataset_neg['label'] = 'ความรู้สึกเชิงลบ (Negative)';
                         dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
                         dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
                         dataset_neg['data'] = data_neg.slice(-24);
@@ -503,13 +485,13 @@ function Data_PosNegArea(datas,type){
             });
         });
                     var dataset_pos = {};
-                        dataset_pos['label'] = 'positive';
+                        dataset_pos['label'] = 'ความรู้สึกเชิงบวก (Positive)';
                         dataset_pos['borderColor'] = 'rgb(54, 162, 235)';
                         dataset_pos['backgroundColor'] = 'rgba(54, 162, 235, 0.5)';
                         dataset_pos['data'] = data_pos.slice(-60);//เอา 60 นาทีล่าสุด
 
                     var dataset_neg = {};
-                        dataset_neg['label'] = 'negative';
+                        dataset_neg['label'] = 'ความรู้สึกเชิงลบ (Negative)';
                         dataset_neg['borderColor'] = 'rgb(255, 99, 132)';
                         dataset_neg['backgroundColor'] = 'rgba(255, 99, 132, 0.5)';
                         dataset_neg['data'] = data_neg.slice(-60);
@@ -529,7 +511,6 @@ function Data_PosNegArea(datas,type){
     //Alldata เอาข้อมูลเเต่ละชุดมามัดรวม
   return data;
 }
-
 
 //////////////////////////
 /////////////////////////Data_WordCloud
@@ -664,4 +645,57 @@ function Data_Bar(datas){
     Alldata['pos'] = data_pos;//แยกไว้ 2 อัน 2 กราฟ
     Alldata['neg'] = data_neg;
     return Alldata.pos;
+}
+//////////////////////////
+/////////////////////////Data_Bar
+
+
+//////////////////////////
+/////////////////////////Data_gauge
+function Data_Gauge(data) {
+  var allData ={};
+
+  var total_of_usa = 0;//รวมการ vote ของ usa ทั้งหมด
+  var total_out_of_usa =0;//รวมการ vote ที่ไม่มี kwyword
+  var total =0;
+  for(var i in data){
+
+    Object.keys(data[i].location).forEach(function(key) {
+      if(key!="" && key != null && key != 'null'){
+        var _total = 0;
+
+        try{pos = data[i].location[key].pos;}
+        catch(err){pos =0;}
+
+        var neg =0;
+        try{neg = data[i].location[key].neg;}
+        catch(err){neg =0;}
+
+        _total +=pos+neg;//รวม pos neg ของทุก keyword
+        total_of_usa+=_total;
+
+
+      }
+      else{
+        var pos =0;
+        try{pos = data[i].location[key].pos;}
+        catch(err){pos =0;}
+
+        var neg =0;
+        try{neg = data[i].location[key].neg;}
+        catch(err){neg =0;}
+
+        total_out_of_usa +=pos+neg;//รวม pos neg ของ ที่ไม่มีkeyword
+      }
+    });
+  }
+  total = total_of_usa+total_out_of_usa;//ข้อความทั้งหมด
+  var scal_of_usa = ((total_of_usa/total)*100).toFixed(2);
+
+  allData['total'] = total;
+  allData['total_of_usa'] = total_of_usa;
+  allData['total_out_of_usa'] = total_out_of_usa;
+  allData['scal_of_usa'] = scal_of_usa;
+
+  return allData;
 }
